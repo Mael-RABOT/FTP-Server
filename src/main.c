@@ -5,20 +5,25 @@
 ** main.c
 */
 
-#include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 #include "../include/protoype.h"
 
+bool handle_command(char *command)
+{
+    printf("Command: %s\n", command);
+    return true;
+}
+
 static void main_loop(t_ftp **ftp)
 {
-    int new_socket;
-    char *message = "Hello, WORLD!\n";
+    bool running = true;
 
-    while (1) {
-        new_socket = accept_socket(&(*ftp));
-        dprintf(new_socket, "%s", message);
+    while (running) {
+        read_from_socket(ftp);
+        running = handle_command(get_command(&(*ftp)->cb_read));
     }
 }
 

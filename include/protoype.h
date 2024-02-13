@@ -16,7 +16,10 @@ int accept_socket(t_ftp **ftp);
 
 void display_help(void);
 
+int send_to_socket(t_ftp **ftp, const char *data);
+int read_from_socket(t_ftp **ftp);
+
 t_circular_buffer *cb_init(int size);
-void cb_free(t_circular_buffer *cb);
-void cb_push(t_circular_buffer *cb, const char *str);
-char *get_command(char *buffer);
+void cb_free(t_circular_buffer **cb);
+void cb_push(t_circular_buffer **cb, const char *str);
+char *get_command(t_circular_buffer **cb);

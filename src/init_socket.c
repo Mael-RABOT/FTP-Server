@@ -24,13 +24,13 @@ static void bind_socket(t_ftp **ftp)
 
 static void listen_socket(t_ftp **ftp)
 {
-    if (listen((*ftp)->sockfd, 5) < 0) {
+    if (listen((*ftp)->sockfd, 5) == -1) {
         perror("listen");
         exit(84);
     }
 }
 
-int accept_socket(t_ftp **ftp)
+void accept_socket(t_ftp **ftp)
 {
     socklen_t addrlen = sizeof((*(*ftp)->server_addr));
     int new_socket;
@@ -41,7 +41,7 @@ int accept_socket(t_ftp **ftp)
         perror("accept");
         exit(84);
     }
-    return new_socket;
+    (*ftp)->new_socket = new_socket;
 }
 
 void init_socket(t_ftp **ftp)
@@ -52,7 +52,7 @@ void init_socket(t_ftp **ftp)
     (*ftp)->server_addr->sin_port = htons((*ftp)->port);
     (*ftp)->server_addr->sin_addr.s_addr = INADDR_ANY;
     setsockopt((*ftp)->sockfd, SOL_SOCKET,
-        SO_REUSEADDR, &(int){1}, sizeof(int));
+        SO_REUSEADDR | SO_REUSEPORT | SO_KEEPALIVE, &(int){1}, sizeof(int));
     bind_socket(&(*ftp));
     printf("Server listening on port %d\n", (*ftp)->port);
     listen_socket(&(*ftp));

@@ -31,3 +31,10 @@ typedef struct s_ftp {
     t_circular_buffer *cb_write;
     t_circular_buffer *cb_read;
 } t_ftp;
+
+typedef bool (*func_ptr)(t_ftp **ftp, char *);
+
+typedef struct {
+    char *command;
+    func_ptr function;
+} command_map;

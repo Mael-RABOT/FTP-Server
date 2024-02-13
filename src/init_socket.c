@@ -13,24 +13,26 @@
 
 #include "../include/types.h"
 
-static void bind_socket(t_ftp **ftp)
+static int bind_socket(t_ftp **ftp)
 {
     if (bind((*ftp)->sockfd, (struct sockaddr *)(*ftp)->server_addr,
         sizeof((*(*ftp)->server_addr))) < 0) {
         perror("bind");
-        exit(84);
+        return -1;
     }
+    return 0;
 }
 
-static void listen_socket(t_ftp **ftp)
+static int listen_socket(t_ftp **ftp)
 {
     if (listen((*ftp)->sockfd, 5) == -1) {
         perror("listen");
-        exit(84);
+        return -1;
     }
+    return 0;
 }
 
-void accept_socket(t_ftp **ftp)
+int accept_socket(t_ftp **ftp)
 {
     socklen_t addrlen = sizeof((*(*ftp)->server_addr));
     int new_socket;
@@ -39,12 +41,13 @@ void accept_socket(t_ftp **ftp)
         (struct sockaddr *)(*ftp)->server_addr, &addrlen);
     if (new_socket < 0) {
         perror("accept");
-        exit(84);
+        return -1;
     }
     (*ftp)->new_socket = new_socket;
+    return 0;
 }
 
-void init_socket(t_ftp **ftp)
+int init_socket(t_ftp **ftp)
 {
     (*ftp)->server_addr = malloc(sizeof(struct sockaddr_in));
     (*ftp)->sockfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -53,7 +56,12 @@ void init_socket(t_ftp **ftp)
     (*ftp)->server_addr->sin_addr.s_addr = INADDR_ANY;
     setsockopt((*ftp)->sockfd, SOL_SOCKET,
         SO_REUSEADDR | SO_REUSEPORT | SO_KEEPALIVE, &(int){1}, sizeof(int));
-    bind_socket(&(*ftp));
+    if (bind_socket(&(*ftp)) == -1) {
+        return -1;
+    }
     printf("Server listening on port %d\n", (*ftp)->port);
-    listen_socket(&(*ftp));
+    if (listen_socket(&(*ftp)) == -1) {
+        return -1;
+    }
+    return 0;
 }

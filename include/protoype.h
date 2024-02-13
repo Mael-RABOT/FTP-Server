@@ -9,15 +9,17 @@
 
 #include "types.h"
 
-void init_ftp(char **av, t_ftp **ftp);
+int init_ftp(char **av, t_ftp **ftp);
 
-void init_socket(t_ftp **ftp);
+int init_socket(t_ftp **ftp);
 int accept_socket(t_ftp **ftp);
 
 void display_help(void);
 
 int send_to_socket(t_ftp **ftp, const char *data);
 int read_from_socket(t_ftp **ftp);
+
+bool handle_command(t_ftp **ftp, char *command);
 
 t_circular_buffer *cb_init(int size);
 void cb_free(t_circular_buffer **cb);

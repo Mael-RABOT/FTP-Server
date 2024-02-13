@@ -11,35 +11,31 @@
 
 #include "../include/protoype.h"
 
-bool handle_command(char *command)
-{
-    printf("Command: %s\n", command);
-    return true;
-}
-
 static void main_loop(t_ftp **ftp)
 {
     bool running = true;
 
     while (running) {
         read_from_socket(ftp);
-        running = handle_command(get_command(&(*ftp)->cb_read));
+        running = handle_command(ftp, get_command(&(*ftp)->cb_read));
     }
 }
 
 int main(int ac, char **av)
 {
     t_ftp *ftp;
+    int ret = 0;
 
     if (ac == 2 && strcmp(av[1], "-help") == 0) {
         display_help();
         return 0;
     }
-    if (ac != 3) {
+    if (ac != 3)
         return 84;
-    }
-    init_ftp(av, &ftp);
-    main_loop(&ftp);
+    ret = init_ftp(av, &ftp);
+    if (ret == 0)
+        main_loop(&ftp);
     free(ftp->server_addr);
     free(ftp);
+    return (ret <= 0 ? 84 : 0);
 }

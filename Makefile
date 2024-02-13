@@ -1,16 +1,23 @@
+##
+## EPITECH PROJECT, 2024
+## B-NWP-400-LYN-4-1-myftp-mael.rabot
+## File description:
+## Makefile
+##
+
 SRC		:=	$(shell find . -type f -name '*.c')
 
 OBJ		=	$(SRC:.c=.o)
 
-CC		=	gcc
-CFLAGS	= -std=gnu -Wall -Wextra
+CC		= gcc
+CFLAGS	= -Wall -Wextra
 V_FLAG  = --leak-check=full --show-leak-kinds=all --track-origins=yes
 EXE		= myftp
 SAN		= -g3
 
 all:	$(EXE)
 
-%.o:	%.cpp
+%.o:	%.c
 		$(CC) -o $@ -c $< $(CFLAGS) $(SAN)
 
 $(EXE): $(OBJ)

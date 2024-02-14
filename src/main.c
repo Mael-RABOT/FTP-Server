@@ -7,9 +7,7 @@
 
 #include <string.h>
 #include <stdlib.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <sys/select.h>
+#include <signal.h>
 
 #include "../include/protoype.h"
 
@@ -35,6 +33,11 @@ void big_free(t_ftp **ftp)
     free((*ftp));
 }
 
+static void sigint_handler(int sig)
+{
+    (void)sig;
+}
+
 int main(int ac, char **av)
 {
     t_ftp *ftp;
@@ -46,6 +49,7 @@ int main(int ac, char **av)
     }
     if (ac != 3)
         return 84;
+    signal(SIGINT, sigint_handler);
     ret = init_ftp(av, &ftp);
     if (ret == 0)
         main_loop(&ftp);

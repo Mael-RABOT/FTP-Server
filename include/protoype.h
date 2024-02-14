@@ -25,6 +25,8 @@ void user(t_ftp **ftp, char **arg);
 void pass(t_ftp **ftp, char **arg);
 void quit(t_ftp **ftp, char **arg);
 void pwd(t_ftp **ftp, char **arg);
+void cwd(t_ftp **ftp, char **arg);
+void cdup(t_ftp **ftp, char **arg);
 
 t_login *parse_file(const char *filename);
 bool check_user(t_ftp **ftp);

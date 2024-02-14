@@ -15,6 +15,7 @@
 #define C230 "230 User logged in, proceed.\r\n"
 #define C220 "220 Service ready for new user.\r\n"
 #define C221 "221 Service closing control connection.\r\n"
+#define C250 "250 Requested file action okay, completed.\r\n"
 #define C331 "331 User name okay, need password.\r\n"
 #define C332 "332 Need account for login.\r\n"
 #define C500 "500 Syntax error, command unrecognized.\r\n"

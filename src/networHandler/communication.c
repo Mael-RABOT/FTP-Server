@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "../include/protoype.h"
+#include "../../include/protoype.h"
 
 int send_to_socket(t_ftp **ftp, const char *data)
 {

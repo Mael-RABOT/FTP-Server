@@ -7,7 +7,7 @@
 
 #include <string.h>
 
-#include "../include/protoype.h"
+#include "../../include/protoype.h"
 
 void handle_command(t_ftp **ftp, char *command)
 {

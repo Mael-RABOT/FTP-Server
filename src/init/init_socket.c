@@ -11,7 +11,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 
-#include "../include/types.h"
+#include "../../include/types.h"
 
 static int bind_socket(t_ftp **ftp)
 {

@@ -3,7 +3,7 @@
 ## Description
 
 This is a simple FTP server written in c.<br>
-It is based on RFC 959.
+This FTP server is based on RFC 959.
 
 ## Usage
 

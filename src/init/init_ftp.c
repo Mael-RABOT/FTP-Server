@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../include/protoype.h"
+#include "../../include/protoype.h"
 
 static void init_user(t_ftp **ftp, char *home)
 {

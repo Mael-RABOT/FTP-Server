@@ -9,9 +9,9 @@
 
 #include "../../include/protoype.h"
 
-void quit(t_ftp **ftp, char **arg)
+void quit(t_ftp **ftp, char **arg, int *client_socket)
 {
     (void)arg;
-    send_to_socket(ftp, C221);
-    close((*ftp)->client_socket);
+    send_to_socket(ftp, C221, client_socket);
+    close((*client_socket));
 }

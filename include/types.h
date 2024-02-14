@@ -7,10 +7,16 @@
 
 #pragma once
 
+#include <sys/select.h>
+
 #define BUFFER_SIZE 4096
 
 #define MAX_LINE_LENGTH 256
 #define MAX_LOGINS 100
+#define MAX_CLIENTS 30
+
+#define TIMEOUT_SEC 1
+#define TIMEOUT_USEC 0
 
 #define C230 "230 User logged in, proceed.\r\n"
 #define C220 "220 Service ready for new user.\r\n"
@@ -59,16 +65,17 @@ typedef struct s_login {
 typedef struct s_ftp {
     int port;
     t_user *user;
-    int sockfd;
+    int server_socket;
     int client_socket;
     t_login *login_array;
     struct sockaddr_in *server_addr;
     t_circular_buffer *cb_write;
     t_circular_buffer *cb_read;
     bool is_running;
+    fd_set read_fds;
 } t_ftp;
 
-typedef void (*func_ptr)(t_ftp **ftp, char **);
+typedef void (*func_ptr)(t_ftp **ftp, char **, int *client_socket);
 
 typedef struct {
     char *command;

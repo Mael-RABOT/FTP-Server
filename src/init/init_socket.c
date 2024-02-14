@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2024
 ** B-NWP-400-LYN-4-1-myftp-mael.rabot
 ** File description:
-** init_socket.c
+** init_server_socket.c
 */
 
 #include <stdio.h>
@@ -11,12 +11,13 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <errno.h>
+#include <fcntl.h>
 
 #include "../../include/types.h"
 
 static int bind_socket(t_ftp **ftp)
 {
-    if (bind((*ftp)->sockfd, (struct sockaddr *)(*ftp)->server_addr,
+    if (bind((*ftp)->server_socket, (struct sockaddr *)(*ftp)->server_addr,
         sizeof((*(*ftp)->server_addr))) < 0) {
         perror("bind");
         return -1;
@@ -26,39 +27,36 @@ static int bind_socket(t_ftp **ftp)
 
 static int listen_socket(t_ftp **ftp)
 {
-    if (listen((*ftp)->sockfd, 5) == -1) {
+    if (listen((*ftp)->server_socket, 5) == -1) {
         perror("listen");
         return -1;
     }
     return 0;
 }
 
-int accept_socket(t_ftp **ftp)
+static int set_non_blocking(int *socket)
 {
-    int new_socket;
+    int flags;
 
-    do {
-        new_socket = accept((*ftp)->sockfd, (struct sockaddr *)NULL, NULL);
-    } while (new_socket == -1 && errno == EINTR);
-
-    if (new_socket == -1) {
-        perror("accept");
+    flags = fcntl(*socket, F_GETFL, 0);
+    if (flags == -1)
         return -1;
-    }
-
-    (*ftp)->client_socket = new_socket;
+    if (fcntl(*socket, F_SETFL, flags | O_NONBLOCK) == -1)
+        return -1;
     return 0;
 }
 
-int init_socket(t_ftp **ftp)
+int init_server_socket(t_ftp **ftp)
 {
     (*ftp)->server_addr = malloc(sizeof(struct sockaddr_in));
-    (*ftp)->sockfd = socket(AF_INET, SOCK_STREAM, 0);
+    (*ftp)->server_socket = socket(AF_INET, SOCK_STREAM, 0);
     (*ftp)->server_addr->sin_family = AF_INET;
     (*ftp)->server_addr->sin_port = htons((*ftp)->port);
     (*ftp)->server_addr->sin_addr.s_addr = INADDR_ANY;
-    setsockopt((*ftp)->sockfd, SOL_SOCKET,
+    setsockopt((*ftp)->server_socket, SOL_SOCKET,
         SO_REUSEADDR | SO_REUSEPORT | SO_KEEPALIVE, &(int){1}, sizeof(int));
+    if (set_non_blocking(&(*ftp)->server_socket) == -1)
+        return -1;
     if (bind_socket(&(*ftp)) == -1) {
         return -1;
     }

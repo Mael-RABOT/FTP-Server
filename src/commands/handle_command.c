@@ -9,10 +9,10 @@
 
 #include "../../include/protoype.h"
 
-void not_implemented(t_ftp **ftp, char **arg)
+void not_implemented(t_ftp **ftp, char **arg, int *client_socket)
 {
     (void)arg;
-    send_to_socket(ftp, C502);
+    send_to_socket(ftp, C502, client_socket);
 }
 
 command_map *get_commands(void)
@@ -38,9 +38,7 @@ command_map *get_commands(void)
     return commands;
 }
 
-#include <stdio.h>
-
-void handle_command(t_ftp **ftp, char *command)
+void handle_command(t_ftp **ftp, char *command, int *client_socket)
 {
     int i = 0;
     char **args;
@@ -54,12 +52,12 @@ void handle_command(t_ftp **ftp, char *command)
     commands = get_commands();
     while (commands[i].command != NULL) {
         if (strcmp(args[0], commands[i].command) == 0) {
-            commands[i].function(ftp, args);
+            commands[i].function(ftp, args, client_socket);
             free_array(args);
             return;
         }
         i++;
     }
-    send_to_socket(ftp, C500);
+    send_to_socket(ftp, C500, client_socket);
     free_array(args);
 }

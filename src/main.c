@@ -13,20 +13,6 @@
 
 #include "../include/protoype.h"
 
-void main_loop(t_ftp **ftp)
-{
-    char *command;
-
-    while ((*ftp)->is_running) {
-        read_from_socket(ftp);
-        command = get_command(&(*ftp)->cb_read);
-        if (command != NULL) {
-            handle_command(ftp, command);
-            free(command);
-        }
-    }
-}
-
 void big_free(t_ftp **ftp)
 {
     free((*ftp)->server_addr);

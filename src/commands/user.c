@@ -9,13 +9,13 @@
 
 #include "../../include/protoype.h"
 
-void user(t_ftp **ftp, char **arg)
+void user(t_ftp **ftp, char **arg, int *client_socket)
 {
     bool found = false;
     int i = 0;
 
     if (array_len(arg) != 2) {
-        send_to_socket(ftp, C501);
+        send_to_socket(ftp, C501, client_socket);
         return;
     }
     while ((*ftp)->login_array[i].user != NULL) {
@@ -26,22 +26,22 @@ void user(t_ftp **ftp, char **arg)
         i++;
     }
     if (found == false)
-        return (void)send_to_socket(ftp, C530);
+        return (void)send_to_socket(ftp, C530, client_socket);
     (*ftp)->user->username = strdup(arg[1]);
-    send_to_socket(ftp, C331);
+    send_to_socket(ftp, C331, client_socket);
 }
 
-void pass(t_ftp **ftp, char **arg)
+void pass(t_ftp **ftp, char **arg, int *client_socket)
 {
     (*ftp)->user->password = strdup((array_len(arg) != 2) ? "" : arg[1]);
     if (!(*ftp)->user->username || strcmp((*ftp)->user->username, "") == 0) {
-        send_to_socket(ftp, C332);
+        send_to_socket(ftp, C332, client_socket);
         return;
     }
     if (check_user(ftp) == false) {
-        send_to_socket(ftp, C530);
+        send_to_socket(ftp, C530, client_socket);
         return;
     }
     (*ftp)->user->is_logged = true;
-    send_to_socket(ftp, C230);
+    send_to_socket(ftp, C230, client_socket);
 }

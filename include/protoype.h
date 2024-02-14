@@ -11,22 +11,23 @@
 
 int init_ftp(char **av, t_ftp **ftp);
 
-int init_socket(t_ftp **ftp);
-int accept_socket(t_ftp **ftp);
+void main_loop(t_ftp **ftp);
+
+int init_server_socket(t_ftp **ftp);
 
 void display_help(void);
 
-int send_to_socket(t_ftp **ftp, const char *data);
-int read_from_socket(t_ftp **ftp);
+int send_to_socket(t_ftp **ftp, const char *data, int *client_socket);
+int read_from_socket(t_ftp **ftp, int *client_socket);
 
-void handle_command(t_ftp **ftp, char *command);
+void handle_command(t_ftp **ftp, char *command, int *client_socket);
 
-void user(t_ftp **ftp, char **arg);
-void pass(t_ftp **ftp, char **arg);
-void quit(t_ftp **ftp, char **arg);
-void pwd(t_ftp **ftp, char **arg);
-void cwd(t_ftp **ftp, char **arg);
-void cdup(t_ftp **ftp, char **arg);
+void user(t_ftp **ftp, char **arg, int *client_socket);
+void pass(t_ftp **ftp, char **arg, int *client_socket);
+void quit(t_ftp **ftp, char **arg, int *client_socket);
+void pwd(t_ftp **ftp, char **arg, int *client_socket);
+void cwd(t_ftp **ftp, char **arg, int *client_socket);
+void cdup(t_ftp **ftp, char **arg, int *client_socket);
 
 t_login *parse_file(const char *filename);
 bool check_user(t_ftp **ftp);

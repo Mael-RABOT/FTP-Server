@@ -44,10 +44,7 @@ int init_ftp(char **av, t_ftp **ftp)
         return 84;
     if (init_user(ftp, av[2]) == 84)
         return 84;
-    if (init_socket(ftp) == -1)
+    if (init_server_socket(ftp) == -1)
         return 84;
-    if (accept_socket(ftp) == -1)
-        return 84;
-    send_to_socket(ftp, C220);
     return 0;
 }

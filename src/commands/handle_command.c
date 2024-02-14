@@ -27,7 +27,7 @@ command_map *get_commands(void)
         {"PWD", pwd},
         {"PASV", not_implemented},
         {"PORT", not_implemented},
-        {"HELP", not_implemented},
+        {"HELP", help},
         {"NOOP", noop},
         {"RETR", not_implemented},
         {"STOR", not_implemented},

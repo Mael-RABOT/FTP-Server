@@ -29,6 +29,7 @@ void pwd(t_ftp **ftp, char **arg, int *client_socket);
 void cwd(t_ftp **ftp, char **arg, int *client_socket);
 void cdup(t_ftp **ftp, char **arg, int *client_socket);
 void noop(t_ftp **ftp, char **arg, int *client_socket);
+void help(t_ftp **ftp, char **arg, int *client_socket);
 
 t_login *parse_file(const char *filename);
 bool check_user(t_ftp **ftp);

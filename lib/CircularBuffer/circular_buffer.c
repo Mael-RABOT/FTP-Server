@@ -64,6 +64,7 @@ char *get_command(t_circular_buffer **cb)
         if (i > 0 && command[i - 1] == '\r' && command[i] == '\n') {
             command[i + 1] = '\0';
             (*cb)->read_head = (current_position + 1) % (*cb)->size;
+            printf("Got command: %s\n", command); // Debug print
             return command;
         }
         current_position = (current_position + 1) % (*cb)->size;

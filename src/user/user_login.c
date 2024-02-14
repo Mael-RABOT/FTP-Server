@@ -44,7 +44,17 @@ static void parse_line(char *line, t_login *login_array, int i)
         } else {
             login_array[i].pass = strdup("");
         }
+    } else {
+        login_array[i].user = strdup("");
+        login_array[i].pass = strdup("");
     }
+}
+
+static void end_init(t_login **login_array, FILE **file, int pos)
+{
+    (*login_array)[pos].user = NULL;
+    (*login_array)[pos].pass = NULL;
+    fclose(*file);
 }
 
 t_login *parse_file(const char *filename)
@@ -67,7 +77,7 @@ t_login *parse_file(const char *filename)
         parse_line(line, login_array, i);
         i++;
     }
-    fclose(file);
+    end_init(&login_array, &file, i);
     return login_array;
 }
 
@@ -81,9 +91,11 @@ bool check_user(t_ftp **ftp)
             && strcmp((*ftp)->login_array[i].pass, "") == 0)
             return true;
         if (strcmp((*ftp)->login_array[i].pass, encrypted_pass) == 0) {
+            free(encrypted_pass);
             return true;
         }
         i++;
     }
+    free(encrypted_pass);
     return false;
 }

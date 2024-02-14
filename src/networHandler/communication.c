@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <errno.h>
 
 #include "../../include/protoype.h"
 
@@ -20,6 +21,7 @@ int send_to_socket(t_ftp **ftp, const char *data)
     if (buffer_data == NULL)
         return -1;
     dprintf((*ftp)->client_socket, "%s", buffer_data);
+    free(buffer_data);
     return 0;
 }
 
@@ -33,6 +35,9 @@ int read_from_socket(t_ftp **ftp)
     }
     bytes_read = read((*ftp)->client_socket, buffer, BUFFER_SIZE - 1);
     if (bytes_read < 0) {
+        free(buffer);
+        return -1;
+    } else if (bytes_read == 0) {
         free(buffer);
         return -1;
     }

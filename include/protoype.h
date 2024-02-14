@@ -39,6 +39,7 @@ char *get_command(t_circular_buffer **cb);
 
 char **str_to_word_array(char *str);
 int array_len(char **array);
+void free_array(char **array);
 
 t_node* create_node(char *data);
 void insert_node(t_node **head, char *data);

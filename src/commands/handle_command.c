@@ -38,20 +38,28 @@ command_map *get_commands(void)
     return commands;
 }
 
+#include <stdio.h>
+
 void handle_command(t_ftp **ftp, char *command)
 {
     int i = 0;
-    char **args = str_to_word_array(command);
-    command_map *commands = get_commands();
+    char **args;
+    command_map *commands;
 
-    if (command == NULL || args == NULL || args[0] == NULL)
+    if (command == NULL)
         return;
+    args = str_to_word_array(command);
+    if (args == NULL)
+        return;
+    commands = get_commands();
     while (commands[i].command != NULL) {
         if (strcmp(args[0], commands[i].command) == 0) {
             commands[i].function(ftp, args);
+            free_array(args);
             return;
         }
         i++;
     }
     send_to_socket(ftp, C500);
+    free_array(args);
 }

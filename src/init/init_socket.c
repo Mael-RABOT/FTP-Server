@@ -10,6 +10,7 @@
 #include <unistd.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <errno.h>
 
 #include "../../include/types.h"
 
@@ -34,16 +35,18 @@ static int listen_socket(t_ftp **ftp)
 
 int accept_socket(t_ftp **ftp)
 {
-    socklen_t addrlen = sizeof((*(*ftp)->server_addr));
-    int client_socket;
+    int new_socket;
 
-    client_socket = accept((*ftp)->sockfd,
-        (struct sockaddr *)(*ftp)->server_addr, &addrlen);
-    if (client_socket < 0) {
+    do {
+        new_socket = accept((*ftp)->sockfd, (struct sockaddr *)NULL, NULL);
+    } while (new_socket == -1 && errno == EINTR);
+
+    if (new_socket == -1) {
         perror("accept");
         return -1;
     }
-    (*ftp)->client_socket = client_socket;
+
+    (*ftp)->client_socket = new_socket;
     return 0;
 }
 

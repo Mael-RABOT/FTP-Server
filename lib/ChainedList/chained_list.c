@@ -14,6 +14,8 @@ t_node* create_node(char *data)
 {
     t_node *new_node = (t_node*)malloc(sizeof(t_node));
 
+    if (new_node == NULL)
+        return NULL;
     new_node->data = strdup(data);
     new_node->next = NULL;
     new_node->prev = NULL;
@@ -30,9 +32,8 @@ void insert_node(t_node **head, char *data)
         return;
     }
     last = *head;
-    while (last->next != NULL) {
+    while (last->next != NULL)
         last = last->next;
-    }
     last->next = new_node;
     new_node->prev = last;
 }

@@ -10,34 +10,44 @@
 
 #include "../../include/protoype.h"
 
-static void init_user(t_ftp **ftp, char *home)
+static int init_user(t_ftp **ftp, char *home)
 {
     (*ftp)->user = malloc(sizeof(t_user));
+    if ((*ftp)->user == NULL) {
+        return 84;
+    }
     (*ftp)->user->home = strdup(home);
-    (*ftp)->user->username = malloc(256 * sizeof(char));
-    (*ftp)->user->password = malloc(256 * sizeof(char));
+    if ((*ftp)->user->home == NULL) {
+        return 84;
+    }
+    (*ftp)->user->username = NULL;
+    (*ftp)->user->password = NULL;
     (*ftp)->user->is_logged = false;
     (*ftp)->user->dir = create_node(home);
-    if ((*ftp)->user->username == NULL || (*ftp)->user->password == NULL) {
-        exit(84);
+    if ((*ftp)->user->dir == NULL) {
+        return 84;
     }
+    return 0;
 }
 
 int init_ftp(char **av, t_ftp **ftp)
 {
     (*ftp) = malloc(sizeof(t_ftp));
+    if ((*ftp) == NULL)
+        return 84;
     (*ftp)->cb_write = cb_init(BUFFER_SIZE);
     (*ftp)->cb_read = cb_init(BUFFER_SIZE);
     (*ftp)->port = atoi(av[1]);
     (*ftp)->is_running = true;
     (*ftp)->login_array = parse_file("login.txt");
-    init_user(ftp, av[2]);
-    if (init_socket(ftp) == -1) {
-        return -1;
-    }
-    if (accept_socket(ftp) == -1) {
-        return -1;
-    }
+    if (!(*ftp)->login_array)
+        return 84;
+    if (init_user(ftp, av[2]) == 84)
+        return 84;
+    if (init_socket(ftp) == -1)
+        return 84;
+    if (accept_socket(ftp) == -1)
+        return 84;
     send_to_socket(ftp, C220);
     return 0;
 }

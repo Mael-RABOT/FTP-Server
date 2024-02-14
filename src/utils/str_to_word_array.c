@@ -10,7 +10,7 @@
 
 static int count_words(char *str)
 {
-    int i = 0;
+    int i;
     int words = 1;
 
     for (i = 0; str[i]; i++)
@@ -54,6 +54,13 @@ static void normalize(char ***array)
     }
 }
 
+void free_array(char **array)
+{
+    for (int i = 0; array[i]; i++)
+        free(array[i]);
+    free(array);
+}
+
 char **str_to_word_array(char *str)
 {
     int words;
@@ -69,7 +76,7 @@ char **str_to_word_array(char *str)
 
 int array_len(char **array)
 {
-    int i = 0;
+    int i;
 
     for (i = 0; array[i]; i++);
     return i;

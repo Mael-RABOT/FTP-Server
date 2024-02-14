@@ -12,6 +12,27 @@
 
 #include "../../include/protoype.h"
 
+char *get_pwd(t_ftp **ftp)
+{
+    char *cwd = malloc(1000);
+    t_node *current_node = (*ftp)->user->dir;
+    bool first = true;
+
+    if (cwd == NULL) {
+        return NULL;
+    }
+    cwd[0] = '\0';
+    while (current_node != NULL) {
+        if (!first && strcmp(cwd, "/") != 0) {
+            strcat(cwd, "/");
+        }
+        strcat(cwd, current_node->data);
+        current_node = current_node->next;
+        first = false;
+    }
+    return cwd;
+}
+
 void pwd(t_ftp **ftp, char **arg)
 {
     char cwd[1000] = "";
@@ -32,44 +53,31 @@ void pwd(t_ftp **ftp, char **arg)
     send_to_socket(ftp, message);
 }
 
-static char *construct_path(t_ftp **ftp, char **arg)
-{
-    char *new_dir;
-    t_node *current_node = (*ftp)->user->dir;
-    int total_length = strlen((*ftp)->user->home);
-
-    for (; current_node != NULL; current_node = current_node->next)
-        total_length += strlen(current_node->data) + 1;
-    total_length += strlen(arg[1]) + 2;
-    new_dir = malloc(total_length);
-    strcpy(new_dir, (*ftp)->user->home);
-    for (current_node = (*ftp)->user->dir; current_node != NULL;
-            current_node = current_node->next) {
-        if (strcmp(new_dir, "/") != 0)
-            strcat(new_dir, "/");
-        strcat(new_dir, current_node->data);
-    }
-    strcat(strcat(new_dir, "/"), arg[1]);
-    return new_dir;
-}
-
 static bool check_directory_exists(char *new_dir)
 {
     struct stat st = {0};
 
     if (stat(new_dir, &st) == -1) {
-        free(new_dir);
         return false;
     }
-    free(new_dir);
     return true;
 }
 
-static bool verify_dir(t_ftp **ftp, char **arg)
+static bool verify_dir(t_ftp **ftp, char *dest)
 {
-    char *new_dir = construct_path(ftp, arg);
+    char *pwd = get_pwd(ftp);
+    char *new_dir = malloc(strlen(pwd) + strlen(dest) + 2);
+    bool directory_exists;
 
-    return check_directory_exists(new_dir);
+    if (new_dir == NULL) {
+        free(pwd);
+        return false;
+    }
+    sprintf(new_dir, "%s/%s", pwd, dest);
+    directory_exists = check_directory_exists(new_dir);
+    free(pwd);
+    free(new_dir);
+    return directory_exists;
 }
 
 void cwd(t_ftp **ftp, char **arg)
@@ -82,7 +90,7 @@ void cwd(t_ftp **ftp, char **arg)
         cdup(ftp, arg);
         return;
     }
-    if (!verify_dir(ftp, arg)) {
+    if (!verify_dir(ftp, arg[1])) {
         send_to_socket(ftp, C550);
         return;
     }

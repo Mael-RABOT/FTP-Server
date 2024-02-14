@@ -19,7 +19,9 @@
 #define C332 "332 Need account for login.\r\n"
 #define C500 "500 Syntax error, command unrecognized.\r\n"
 #define C501 "501 Syntax error in parameters or arguments.\r\n"
+#define C502 "502 Command not implemented.\r\n"
 #define C530 "530 Not logged in.\r\n"
+#define C550 "550 Requested action not taken.\r\n"
 
 typedef enum e_bool {
     false = 0,

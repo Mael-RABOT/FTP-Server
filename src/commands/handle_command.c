@@ -16,6 +16,7 @@ void handle_command(t_ftp **ftp, char *command)
     command_map commands[] = {
             {"USER", user},
             {"PASS", pass},
+            {"QUIT", quit},
             {NULL, NULL}
     };
 

@@ -6,40 +6,41 @@
 */
 
 #include <string.h>
-#include <stdio.h>
 
 #include "../include/protoype.h"
 
-static bool function1(t_ftp **ftp, char *arg)
+static void user(t_ftp **ftp, char **arg)
 {
+    if (array_len(arg) != 2) {
+        send_to_socket(ftp, "500 Missing Argument.\r\n");
+        return;
+    }
     send_to_socket(ftp, "200 Command 1 okay.\r\n");
-    return true;
 }
 
-static bool function2(t_ftp **ftp, char *arg)
+static void pass(t_ftp **ftp, char **arg __attribute__((unused)))
 {
     send_to_socket(ftp, "200 Command 2 okay.\r\n");
-    return true;
 }
 
-bool handle_command(t_ftp **ftp, char *command)
+void handle_command(t_ftp **ftp, char *command)
 {
     int i = 0;
+    char **args = str_to_word_array(command);
     command_map commands[] = {
-            {"command1\r\n", function1},
-            {"command2\r\n", function2},
+            {"USER", user},
+            {"PASS", pass},
             {NULL, NULL}
     };
 
-    if (command == NULL) {
-        return true;
-    }
+    if (command == NULL || args == NULL || args[0] == NULL)
+        return;
     while (commands[i].command != NULL) {
-        if (strcmp(command, commands[i].command) == 0) {
-            return commands[i].function(ftp, command);
+        if (strcmp(args[0], commands[i].command) == 0) {
+            commands[i].function(ftp, args);
+            return;
         }
         i++;
     }
     send_to_socket(ftp, "500 Unknown command.\r\n");
-    return true;
 }

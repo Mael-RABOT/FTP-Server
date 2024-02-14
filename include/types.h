@@ -22,17 +22,25 @@ typedef struct s_circular_buffer {
     int size;
 } t_circular_buffer;
 
+typedef struct s_user {
+    char *username;
+    char *password;
+    bool is_logged;
+    char *home;
+} t_user;
+
 typedef struct s_ftp {
     int port;
-    char *path;
+    t_user *user;
     int sockfd;
     int new_socket;
     struct sockaddr_in *server_addr;
     t_circular_buffer *cb_write;
     t_circular_buffer *cb_read;
+    bool is_running;
 } t_ftp;
 
-typedef bool (*func_ptr)(t_ftp **ftp, char *);
+typedef void (*func_ptr)(t_ftp **ftp, char **);
 
 typedef struct {
     char *command;

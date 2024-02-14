@@ -19,9 +19,12 @@ void display_help(void);
 int send_to_socket(t_ftp **ftp, const char *data);
 int read_from_socket(t_ftp **ftp);
 
-bool handle_command(t_ftp **ftp, char *command);
+void handle_command(t_ftp **ftp, char *command);
 
 t_circular_buffer *cb_init(int size);
 void cb_free(t_circular_buffer **cb);
 void cb_push(t_circular_buffer **cb, const char *str);
 char *get_command(t_circular_buffer **cb);
+
+char **str_to_word_array(char *str);
+int array_len(char **array);

@@ -16,20 +16,32 @@ It is based on RFC 959.
 
 ## Commands
 
-- `USER <username>`: authenticate the user.
-- `PASS <password>`: authenticate the user.
-- `CWD <path>`: change the working directory.
-- `CDUP`: change the working directory to the parent directory.
-- `PWD`: print the working directory.
-- `QUIT`: close the connection.
-- `DELE <path>`: delete the file at the specified path.
-- `PASV`: enter passive mode.
-- `PORT <h1,h2,h3,h4,p1,p2>`: enter active mode.
-- `HELP`: display the list of available commands.
-- `NOOP`: do nothing.
-- `RETR <path>`: download the file at the specified path.
-- `STOR <path>`: upload the file at the specified path.
-- `LIST`: list the files in the current directory.
+            USER <SP> <username> <CRLF>   : Specify user for authentication
+            PASS <SP> <password> <CRLF>   : Specify password for authentication
+
+            CWD  <SP> <pathname> <CRLF>   : Change working directory
+            CDUP <CRLF>                   : Change working directory to parent directory
+
+            QUIT <CRLF>                   : Disconnection
+
+            DELE <SP> <pathname> <CRLF>   : Delete file on the server
+
+            PWD  <CRLF>                   : Print working directory
+
+            PASV <CRLF>                   : Enable "passive" mode for data transfer
+
+            PORT <SP> <host-port> <CRLF>  : Enable "active" mode for data transfer
+
+
+            HELP [<SP> <string>] <CRLF>   : List available commands
+
+            NOOP <CRLF>                   : Do nothing
+
+            (the following are commands using data transfer )
+
+            RETR <SP> <pathname> <CRLF>   : Download file from server to client
+            STOR <SP> <pathname> <CRLF>   : Upload file from client to server
+            LIST [<SP> <pathname>] <CRLF> : List files in the current working directory
 
 ## Authors
 

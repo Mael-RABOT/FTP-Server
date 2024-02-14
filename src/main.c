@@ -13,11 +13,9 @@
 
 static void main_loop(t_ftp **ftp)
 {
-    bool running = true;
-
-    while (running) {
+    while ((*ftp)->is_running) {
         read_from_socket(ftp);
-        running = handle_command(ftp, get_command(&(*ftp)->cb_read));
+        handle_command(ftp, get_command(&(*ftp)->cb_read));
     }
 }
 

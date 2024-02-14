@@ -16,6 +16,7 @@
 #define C220 "220 Service ready for new user.\r\n"
 #define C221 "221 Service closing control connection.\r\n"
 #define C331 "331 User name okay, need password.\r\n"
+#define C332 "332 Need account for login.\r\n"
 #define C500 "500 Syntax error, command unrecognized.\r\n"
 #define C501 "501 Syntax error in parameters or arguments.\r\n"
 #define C530 "530 Not logged in.\r\n"
@@ -56,7 +57,7 @@ typedef struct s_ftp {
     int port;
     t_user *user;
     int sockfd;
-    int new_socket;
+    int client_socket;
     t_login *login_array;
     struct sockaddr_in *server_addr;
     t_circular_buffer *cb_write;

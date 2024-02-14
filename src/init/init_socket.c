@@ -35,15 +35,15 @@ static int listen_socket(t_ftp **ftp)
 int accept_socket(t_ftp **ftp)
 {
     socklen_t addrlen = sizeof((*(*ftp)->server_addr));
-    int new_socket;
+    int client_socket;
 
-    new_socket = accept((*ftp)->sockfd,
+    client_socket = accept((*ftp)->sockfd,
         (struct sockaddr *)(*ftp)->server_addr, &addrlen);
-    if (new_socket < 0) {
+    if (client_socket < 0) {
         perror("accept");
         return -1;
     }
-    (*ftp)->new_socket = new_socket;
+    (*ftp)->client_socket = client_socket;
     return 0;
 }
 

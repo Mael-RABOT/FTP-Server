@@ -13,5 +13,5 @@ void quit(t_ftp **ftp, char **arg)
 {
     (void)arg;
     send_to_socket(ftp, C221);
-    close((*ftp)->new_socket);
+    close((*ftp)->client_socket);
 }

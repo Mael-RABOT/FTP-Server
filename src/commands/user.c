@@ -33,10 +33,11 @@ void user(t_ftp **ftp, char **arg)
 
 void pass(t_ftp **ftp, char **arg)
 {
-    if (array_len(arg) != 2) {
-        (*ftp)->user->password = strdup("");
-    } else
-        (*ftp)->user->password = strdup(arg[1]);
+    (*ftp)->user->password = strdup((array_len(arg) != 2) ? "" : arg[1]);
+    if (strcmp((*ftp)->user->username, "") == 0) {
+        send_to_socket(ftp, C332);
+        return;
+    }
     if (check_user(ftp) == false) {
         send_to_socket(ftp, C530);
         return;

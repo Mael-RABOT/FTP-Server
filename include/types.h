@@ -9,6 +9,16 @@
 
 #define BUFFER_SIZE 4096
 
+#define MAX_LINE_LENGTH 256
+#define MAX_LOGINS 100
+
+#define C230 "230 User logged in, proceed.\r\n"
+#define C220 "220 Service ready for new user.\r\n"
+#define C331 "331 User name okay, need password.\r\n"
+#define C500 "500 Syntax error, command unrecognized.\r\n"
+#define C501 "501 Syntax error in parameters or arguments.\r\n"
+#define C530 "530 Not logged in.\r\n"
+
 typedef enum e_bool {
     false = 0,
     true = 1
@@ -22,18 +32,31 @@ typedef struct s_circular_buffer {
     int size;
 } t_circular_buffer;
 
+typedef struct s_node {
+    char *data;
+    struct s_node *next;
+    struct s_node *prev;
+} t_node;
+
 typedef struct s_user {
     char *username;
     char *password;
     bool is_logged;
+    t_node *dir;
     char *home;
 } t_user;
+
+typedef struct s_login {
+    char *user;
+    char *pass;
+} t_login;
 
 typedef struct s_ftp {
     int port;
     t_user *user;
     int sockfd;
     int new_socket;
+    t_login *login_array;
     struct sockaddr_in *server_addr;
     t_circular_buffer *cb_write;
     t_circular_buffer *cb_read;

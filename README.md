@@ -43,6 +43,13 @@ It is based on RFC 959.
             STOR <SP> <pathname> <CRLF>   : Upload file from client to server
             LIST [<SP> <pathname>] <CRLF> : List files in the current working directory
 
+## Creating a user
+
+    ./create_user.sh
+
+The script will ask for a username and a password and will add it in the login.txt file.<br>
+The password will automatically be hashed using the XOR algorithm. (it is not secure at all, it is just an example)
+
 ## Authors
 
 - [**Maël RABOT**](https://www.linkedin.com/in/mael-rabot/)

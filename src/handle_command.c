@@ -9,20 +9,6 @@
 
 #include "../include/protoype.h"
 
-static void user(t_ftp **ftp, char **arg)
-{
-    if (array_len(arg) != 2) {
-        send_to_socket(ftp, "500 Missing Argument.\r\n");
-        return;
-    }
-    send_to_socket(ftp, "200 Command 1 okay.\r\n");
-}
-
-static void pass(t_ftp **ftp, char **arg __attribute__((unused)))
-{
-    send_to_socket(ftp, "200 Command 2 okay.\r\n");
-}
-
 void handle_command(t_ftp **ftp, char *command)
 {
     int i = 0;
@@ -42,5 +28,5 @@ void handle_command(t_ftp **ftp, char *command)
         }
         i++;
     }
-    send_to_socket(ftp, "500 Unknown command.\r\n");
+    send_to_socket(ftp, C500);
 }

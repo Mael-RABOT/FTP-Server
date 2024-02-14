@@ -34,6 +34,7 @@ int main(int ac, char **av)
     if (ret == 0)
         main_loop(&ftp);
     free(ftp->server_addr);
+    delete_list(&ftp->user->dir);
     free(ftp);
     return (ret <= 0 ? 84 : 0);
 }

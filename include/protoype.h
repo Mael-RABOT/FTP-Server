@@ -21,6 +21,13 @@ int read_from_socket(t_ftp **ftp);
 
 void handle_command(t_ftp **ftp, char *command);
 
+void user(t_ftp **ftp, char **arg);
+void pass(t_ftp **ftp, char **arg);
+
+t_login *parse_file(const char *filename);
+bool check_user(t_ftp **ftp);
+char *xor_cipher(char *input);
+
 t_circular_buffer *cb_init(int size);
 void cb_free(t_circular_buffer **cb);
 void cb_push(t_circular_buffer **cb, const char *str);
@@ -28,3 +35,9 @@ char *get_command(t_circular_buffer **cb);
 
 char **str_to_word_array(char *str);
 int array_len(char **array);
+
+t_node* create_node(char *data);
+void insert_node(t_node **head, char *data);
+void delete_node(t_node **head, t_node *node_to_delete);
+void delete_list(t_node **head);
+t_node *get_last(t_node *head);

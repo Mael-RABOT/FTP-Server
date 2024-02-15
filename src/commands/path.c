@@ -51,7 +51,7 @@ void pwd(t_ftp **ftp, char **arg, int *client_socket)
         current_node = current_node->next;
         first = false;
     }
-    snprintf(message, sizeof(message), "257 \"%s\" created.\r\n", cwd);
+    snprintf(message, sizeof(message), "250 \"%s\".\r\n", cwd);
     send_to_socket(ftp, message, client_socket);
 }
 
@@ -82,6 +82,25 @@ static bool verify_dir(t_ftp **ftp, char *dest, int *client_socket)
     return directory_exists;
 }
 
+static bool special_case(t_ftp **ftp, char **arg, t_client *client)
+{
+    if (strcmp(arg[1], "..") == 0) {
+        cdup(ftp, arg, &client->socket);
+        return true;
+    }
+    if (arg[1][0] == '.') {
+        send_to_socket(ftp, C250, &client->socket);
+        return true;
+    }
+    if (arg[1][0] == '/') {
+        delete_list(&client->user->dir);
+        client->user->dir = create_node((*ftp)->server_home);
+        send_to_socket(ftp, C250, &client->socket);
+        return true;
+    }
+    return false;
+}
+
 void cwd(t_ftp **ftp, char **arg, int *client_socket)
 {
     t_client *client = get_client(ftp, client_socket);
@@ -90,10 +109,8 @@ void cwd(t_ftp **ftp, char **arg, int *client_socket)
         send_to_socket(ftp, C501, client_socket);
         return;
     }
-    if (strcmp(arg[1], "..") == 0) {
-        cdup(ftp, arg, client_socket);
+    if (special_case(ftp, arg, client))
         return;
-    }
     if (!verify_dir(ftp, arg[1], client_socket)) {
         send_to_socket(ftp, C550, client_socket);
         return;

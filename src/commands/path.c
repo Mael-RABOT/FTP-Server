@@ -12,10 +12,11 @@
 
 #include "../../include/protoype.h"
 
-char *get_pwd(t_ftp **ftp)
+char *get_pwd(t_ftp **ftp, int *client_socket)
 {
     char *cwd = malloc(1000);
-    t_node *current_node = (*ftp)->user->dir;
+    t_client *client = get_client(ftp, client_socket);
+    t_node *current_node = client->user->dir;
     bool first = true;
 
     if (cwd == NULL) {
@@ -37,7 +38,8 @@ void pwd(t_ftp **ftp, char **arg, int *client_socket)
 {
     char cwd[1000] = "";
     char message[sizeof(cwd) + 24];
-    t_node *current_node = (*ftp)->user->dir;
+    t_client *client = get_client(ftp, client_socket);
+    t_node *current_node = client->user->dir;
     bool first = true;
 
     (void)arg;
@@ -63,9 +65,9 @@ static bool check_directory_exists(char *new_dir)
     return true;
 }
 
-static bool verify_dir(t_ftp **ftp, char *dest)
+static bool verify_dir(t_ftp **ftp, char *dest, int *client_socket)
 {
-    char *pwd = get_pwd(ftp);
+    char *pwd = get_pwd(ftp, client_socket);
     char *new_dir = malloc(strlen(pwd) + strlen(dest) + 2);
     bool directory_exists;
 
@@ -82,6 +84,8 @@ static bool verify_dir(t_ftp **ftp, char *dest)
 
 void cwd(t_ftp **ftp, char **arg, int *client_socket)
 {
+    t_client *client = get_client(ftp, client_socket);
+
     if (arg == NULL || arg[1] == NULL) {
         send_to_socket(ftp, C501, client_socket);
         return;
@@ -90,24 +94,25 @@ void cwd(t_ftp **ftp, char **arg, int *client_socket)
         cdup(ftp, arg, client_socket);
         return;
     }
-    if (!verify_dir(ftp, arg[1])) {
+    if (!verify_dir(ftp, arg[1], client_socket)) {
         send_to_socket(ftp, C550, client_socket);
         return;
     }
-    insert_node(&(*ftp)->user->dir, arg[1]);
+    insert_node(&client->user->dir, arg[1]);
     send_to_socket(ftp, C250, client_socket);
 }
 
 void cdup(t_ftp **ftp, char **arg, int *client_socket)
 {
+    t_client *client = get_client(ftp, client_socket);
     t_node *last_node;
 
     (void)arg;
-    if ((*ftp)->user->dir->next == NULL) {
+    if (client->user->dir->next == NULL) {
         send_to_socket(ftp, C550, client_socket);
         return;
     }
-    last_node = get_last((*ftp)->user->dir);
-    delete_node(&(*ftp)->user->dir, last_node);
+    last_node = get_last(client->user->dir);
+    delete_node(&client->user->dir, last_node);
     send_to_socket(ftp, C250, client_socket);
 }

@@ -13,6 +13,7 @@ void user(t_ftp **ftp, char **arg, int *client_socket)
 {
     bool found = false;
     int i = 0;
+    t_client *client = get_client(ftp, client_socket);
 
     if (array_len(arg) != 2) {
         send_to_socket(ftp, C501, client_socket);
@@ -27,21 +28,23 @@ void user(t_ftp **ftp, char **arg, int *client_socket)
     }
     if (found == false)
         return (void)send_to_socket(ftp, C530, client_socket);
-    (*ftp)->user->username = strdup(arg[1]);
+    client->user->username = strdup(arg[1]);
     send_to_socket(ftp, C331, client_socket);
 }
 
 void pass(t_ftp **ftp, char **arg, int *client_socket)
 {
-    (*ftp)->user->password = strdup((array_len(arg) != 2) ? "" : arg[1]);
-    if (!(*ftp)->user->username || strcmp((*ftp)->user->username, "") == 0) {
+    t_client *client = get_client(ftp, client_socket);
+
+    if (!client->user->username || strcmp(client->user->username, "") == 0) {
         send_to_socket(ftp, C332, client_socket);
         return;
     }
-    if (check_user(ftp) == false) {
+    client->user->password = strdup((array_len(arg) != 2) ? "" : arg[1]);
+    if (check_user(ftp, client) == false) {
         send_to_socket(ftp, C530, client_socket);
         return;
     }
-    (*ftp)->user->is_logged = true;
+    client->user->is_logged = true;
     send_to_socket(ftp, C230, client_socket);
 }

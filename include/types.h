@@ -8,6 +8,7 @@
 #pragma once
 
 #include <sys/select.h>
+#include <netinet/in.h>
 
 #define BUFFER_SIZE 4096
 
@@ -34,21 +35,45 @@
 #define C214 "214 Help message.\n" HELP
 #define HELP H1 H2 H3 H4 H5 H6 H7 H8 H9 H10 H11 H12 LABEL H13 H14 H15
 #define H1 "\tThe following commands are recognized:\n"
-#define H2 "\tUSER <SP> <username> <CRLF>   : Specify user for authentication.\n"
-#define H3 "\tPASS <SP> <password> <CRLF>   : Specify password for authentication.\n"
-#define H4 "\tCWD  <SP> <pathname> <CRLF>   : Change working directory.\n"
-#define H5 "\tCDUP <CRLF>                   : Change working directory to parent directory.\n"
+#define H2A "\tUSER <SP> <username> <CRLF>   : "
+#define H2B "Specify user for authentication.\n"
+#define H2 H2A H2B
+#define H3A "\tPASS <SP> <password> <CRLF>   : "
+#define H3B "Specify password for authentication.\n"
+#define H3 H3A H3B
+#define H4A "\tCWD  <SP> <pathname> <CRLF>   : "
+#define H4B "Change working directory.\n"
+#define H4 H4A H4B
+#define H5A "\tCDUP <CRLF>                   : "
+#define H5B "Change working directory to parent directory.\n"
+#define H5 H5A H5B
 #define H6 "\tQUIT <CRLF>                   : Disconnection.\n"
-#define H7 "\tDELE <SP> <pathname> <CRLF>   : Delete file on the server.\n"
-#define H8 "\tPWD  <CRLF>                   : Print working directory.\n"
-#define H9 "\tPASV <CRLF>                   : Enable \"passive\" mode for data transfer.\n"
-#define H10 "\tPORT <SP> <host-port> <CRLF>  : Enable \"active\" mode for data transfer.\n"
-#define H11 "\tHELP [<SP> <string>] <CRLF>   : List available commands.\n"
+#define H7A "\tDELE <SP> <pathname> <CRLF>   : "
+#define H7B "Delete file on the server.\n"
+#define H7 H7A H7B
+#define H8A "\tPWD  <CRLF>                   : "
+#define H8B "Print working directory.\n"
+#define H8 H8A H8B
+#define H9A "\tPASV <CRLF>                   : "
+#define H9B "Enable \"passive\" mode for data transfer.\n"
+#define H9 H9A H9B
+#define H10A "\tPORT <SP> <host-port> <CRLF>  : "
+#define H10B "Enable \"active\" mode for data transfer.\n"
+#define H10 H10A H10B
+#define H11A "\tHELP [<SP> <string>] <CRLF>   : "
+#define H11B "List available commands.\n"
+#define H11 H11A H11B
 #define H12 "\tNOOP <CRLF>                   : Do nothing.\n"
 #define LABEL "\t(the following are commands using data transfer)\n"
-#define H13 "\tRETR <SP> <pathname> <CRLF>   : Download file from server to client.\n"
-#define H14 "\tSTOR <SP> <pathname> <CRLF>   : Upload file from client to server.\n"
-#define H15 "\tLIST [<SP> <pathname>] <CRLF> : List files in the current working directory.\r\n"
+#define H13A "\tRETR <SP> <pathname> <CRLF>   : "
+#define H13B "Download file from server to client.\n"
+#define H13 H13A H13B
+#define H14A "\tSTOR <SP> <pathname> <CRLF>   : "
+#define H14B "Upload file from client to server.\n"
+#define H14 H14A H14B
+#define H15A "\tLIST [<SP> <pathname>] <CRLF> : "
+#define H15B "List files in the current working directory.\r\n"
+#define H15 H15A H15B
 
 typedef enum e_bool {
     false = 0,
@@ -82,12 +107,22 @@ typedef struct s_login {
     char *pass;
 } t_login;
 
+typedef struct s_client {
+    int socket;
+    int active_socket;
+    struct sockaddr_in addr;
+    t_user *user;
+    t_circular_buffer *cb_write;
+    t_circular_buffer *cb_read;
+} t_client;
+
 typedef struct s_ftp {
     int port;
-    t_user *user;
     int server_socket;
-    int client_socket;
     t_login *login_array;
+    t_client **clients;
+    int nb_clients;
+    char *server_home;
     struct sockaddr_in *server_addr;
     t_circular_buffer *cb_write;
     t_circular_buffer *cb_read;

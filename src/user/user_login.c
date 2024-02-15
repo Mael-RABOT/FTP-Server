@@ -81,13 +81,13 @@ t_login *parse_file(const char *filename)
     return login_array;
 }
 
-bool check_user(t_ftp **ftp)
+bool check_user(t_ftp **ftp, t_client *client)
 {
     int i = 0;
-    char *encrypted_pass = xor_cipher((*ftp)->user->password);
+    char *encrypted_pass = xor_cipher(client->user->password);
 
     while ((*ftp)->login_array[i].user != NULL) {
-        if (strcmp((*ftp)->login_array[i].user, (*ftp)->user->username) == 0
+        if (strcmp((*ftp)->login_array[i].user, client->user->username) == 0
             && strcmp((*ftp)->login_array[i].pass, "") == 0)
             return true;
         if (strcmp((*ftp)->login_array[i].pass, encrypted_pass) == 0) {

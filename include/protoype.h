@@ -31,8 +31,13 @@ void cdup(t_ftp **ftp, char **arg, int *client_socket);
 void noop(t_ftp **ftp, char **arg, int *client_socket);
 void help(t_ftp **ftp, char **arg, int *client_socket);
 
+int add_client(t_ftp **ftp, int *client_socket);
+void remove_client(t_ftp **ftp, int *client_socket);
+void clear_clients(t_ftp **ftp);
+t_client *get_client(t_ftp **ftp, int *client_socket);
+
 t_login *parse_file(const char *filename);
-bool check_user(t_ftp **ftp);
+bool check_user(t_ftp **ftp, t_client *client);
 char *xor_cipher(char *input);
 
 t_circular_buffer *cb_init(int size);

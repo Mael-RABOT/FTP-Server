@@ -14,11 +14,7 @@
 void big_free(t_ftp **ftp)
 {
     free((*ftp)->server_addr);
-    delete_list(&(*ftp)->user->dir);
-    free((*ftp)->user->password);
-    free((*ftp)->user->username);
-    free((*ftp)->user->home);
-    free((*ftp)->user);
+    free((*ftp)->server_home);
     if ((*ftp)->login_array != NULL) {
         for (int i = 0; (*ftp)->login_array[i].user != NULL; i++) {
             free((*ftp)->login_array[i].user);
@@ -30,6 +26,8 @@ void big_free(t_ftp **ftp)
     free((*ftp)->cb_read);
     free((*ftp)->cb_write->buffer);
     free((*ftp)->cb_write);
+    clear_clients(ftp);
+    free((*ftp)->clients);
     free((*ftp));
 }
 

@@ -10,23 +10,11 @@
 #include <unistd.h>
 #include <sys/select.h>
 #include <sys/socket.h>
-#include <netinet/in.h>
 #include <fcntl.h>
 
 #include "../include/protoype.h"
 
-static void add_new_socket_to_client_sockets(
-    int *client_socket, int new_socket)
-{
-    for (int i = 0; i < MAX_CLIENTS; i++) {
-        if (client_socket[i] == 0) {
-            client_socket[i] = new_socket;
-            break;
-        }
-    }
-}
-
-static void handle_new_connection(t_ftp **ftp, int **client_socket)
+static void handle_new_connection(t_ftp **ftp)
 {
     int new_socket;
     socklen_t addrlen = sizeof((*ftp)->server_addr);
@@ -36,56 +24,55 @@ static void handle_new_connection(t_ftp **ftp, int **client_socket)
                             (struct sockaddr *)(*ftp)->server_addr, &addrlen);
         if (new_socket < 0)
             return;
-        add_new_socket_to_client_sockets(*client_socket, new_socket);
+        if (add_client(ftp, &new_socket) < 0) {
+            close(new_socket);
+            return;
+        }
         send_to_socket(ftp, C220, &new_socket);
     }
 }
 
-static void handle_buffer(t_ftp **ftp, int i, int **client_socket)
+static void handle_buffer(t_ftp **ftp, int i)
 {
-    int sd;
     int bytes_read;
     char buffer[BUFFER_SIZE];
 
-    sd = (*client_socket)[i];
-    if (FD_ISSET(sd, &(*ftp)->read_fds)) {
-        bytes_read = read(sd, buffer, BUFFER_SIZE - 1);
+    if (FD_ISSET((*ftp)->clients[i]->socket, &(*ftp)->read_fds)) {
+        bytes_read = read((*ftp)->clients[i]->socket, buffer, BUFFER_SIZE - 1);
         if (bytes_read == 0) {
-            close(sd);
-            (*client_socket)[i] = 0;
+            remove_client(ftp, &(*ftp)->clients[i]->socket);
+            return;
         }
         if (bytes_read > 0) {
             buffer[bytes_read] = '\0';
-            handle_command(ftp, buffer, &sd);
+            handle_command(ftp, buffer, &(*ftp)->clients[i]->socket);
         }
     }
 }
 
-static void check_connection(t_ftp **ftp, int **client_socket)
+static void check_connection(t_ftp **ftp)
 {
-    for (int i = 0; i < MAX_CLIENTS; i++) {
-        handle_buffer(ftp, i, client_socket);
+    for (int i = 0; i < (*ftp)->nb_clients; i++) {
+        handle_buffer(ftp, i);
     }
 }
 
-static void iteration(t_ftp **ftp, int *client_socket)
+static void iteration(t_ftp **ftp)
 {
     struct timeval timeout = {TIMEOUT_SEC, TIMEOUT_USEC};
     int max_sd = (*ftp)->server_socket;
-    int sd;
 
     FD_ZERO(&(*ftp)->read_fds);
     FD_SET((*ftp)->server_socket, &(*ftp)->read_fds);
-    for (int i = 0; i < MAX_CLIENTS; i++) {
-        sd = client_socket[i];
-        if (sd > 0)
-            FD_SET(sd, &(*ftp)->read_fds);
-        if (sd > max_sd)
-            max_sd = sd;
+    for (int i = 0; i < (*ftp)->nb_clients; i++) {
+        if ((*ftp)->clients[i]->socket > 0)
+            FD_SET((*ftp)->clients[i]->socket, &(*ftp)->read_fds);
+        if ((*ftp)->clients[i]->socket > max_sd)
+            max_sd = (*ftp)->clients[i]->socket;
     }
     select(max_sd + 1, &(*ftp)->read_fds, NULL, NULL, &timeout);
-    handle_new_connection(ftp, &client_socket);
-    check_connection(ftp, &client_socket);
+    handle_new_connection(ftp);
+    check_connection(ftp);
 }
 
 static int check_stdin_for_eof(void)
@@ -101,16 +88,11 @@ static int check_stdin_for_eof(void)
 
 void main_loop(t_ftp **ftp)
 {
-    int client_socket[MAX_CLIENTS];
-
-    for (int i = 0; i < MAX_CLIENTS; i++) {
-        client_socket[i] = 0;
-    }
     while ((*ftp)->is_running) {
         if (check_stdin_for_eof()) {
             (*ftp)->is_running = false;
             break;
         }
-        iteration(ftp, client_socket);
+        iteration(ftp);
     }
 }

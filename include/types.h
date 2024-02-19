@@ -26,6 +26,7 @@
 #define C250 "250 Requested file action okay, completed.\r\n"
 #define C331 "331 User name okay, need password.\r\n"
 #define C332 "332 Need account for login.\r\n"
+#define C425 "425 Can't open data connection.\r\n"
 #define C500 "500 Syntax error, command unrecognized.\r\n"
 #define C501 "501 Syntax error in parameters or arguments.\r\n"
 #define C502 "502 Command not implemented.\r\n"
@@ -80,6 +81,12 @@ typedef enum e_bool {
     true = 1
 } bool;
 
+typedef enum e_mode {
+    None = -1,
+    Active = 0,
+    Passive = 1
+} t_mode;
+
 typedef struct s_circular_buffer {
     char *buffer;
     int read_head;
@@ -108,9 +115,10 @@ typedef struct s_login {
 } t_login;
 
 typedef struct s_client {
+    t_mode mode;
     int socket;
     int active_socket;
-    struct sockaddr_in addr;
+    struct sockaddr_in act_addr;
     t_user *user;
     t_circular_buffer *cb_write;
     t_circular_buffer *cb_read;

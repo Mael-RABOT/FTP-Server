@@ -51,7 +51,7 @@ void pwd(t_ftp **ftp, char **arg, int *client_socket)
         current_node = current_node->next;
         first = false;
     }
-    snprintf(message, sizeof(message), "250 \"%s\".\r\n", cwd);
+    snprintf(message, sizeof(message), "257 \"%s\" created.\r\n", cwd);
     send_to_socket(ftp, message, client_socket);
 }
 

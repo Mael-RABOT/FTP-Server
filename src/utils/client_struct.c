@@ -43,6 +43,7 @@ int add_client(t_ftp **ftp, int *client_socket)
     new_client->socket = *client_socket;
     new_client->cb_write = NULL;
     new_client->cb_read = NULL;
+    new_client->mode = None;
     (*ftp)->clients[(*ftp)->nb_clients] = new_client;
     (*ftp)->nb_clients++;
     return 0;

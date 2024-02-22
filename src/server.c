@@ -10,7 +10,6 @@
 #include <unistd.h>
 #include <sys/select.h>
 #include <sys/socket.h>
-#include <fcntl.h>
 
 #include "../include/protoype.h"
 
@@ -75,24 +74,9 @@ static void iteration(t_ftp **ftp)
     check_connection(ftp);
 }
 
-static int check_stdin_for_eof(void)
-{
-    char buffer[2];
-
-    fcntl(STDIN_FILENO, F_SETFL, O_NONBLOCK);
-    if (read(STDIN_FILENO, buffer, 1) == 0) {
-        return 1;
-    }
-    return 0;
-}
-
 void main_loop(t_ftp **ftp)
 {
     while ((*ftp)->is_running) {
-        if (check_stdin_for_eof()) {
-            (*ftp)->is_running = false;
-            break;
-        }
         iteration(ftp);
     }
 }

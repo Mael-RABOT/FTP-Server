@@ -2,3 +2,4 @@
 *.out
 myftp
 *.o
+test_ftp.sh

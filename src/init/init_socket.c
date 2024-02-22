@@ -10,8 +10,6 @@
 #include <unistd.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
-#include <errno.h>
-#include <fcntl.h>
 
 #include "../../include/types.h"
 
@@ -34,18 +32,6 @@ static int listen_socket(t_ftp **ftp)
     return 0;
 }
 
-static int set_non_blocking(int *socket)
-{
-    int flags;
-
-    flags = fcntl(*socket, F_GETFL, 0);
-    if (flags == -1)
-        return -1;
-    if (fcntl(*socket, F_SETFL, flags | O_NONBLOCK) == -1)
-        return -1;
-    return 0;
-}
-
 int init_server_socket(t_ftp **ftp)
 {
     (*ftp)->server_addr = malloc(sizeof(struct sockaddr_in));
@@ -53,10 +39,6 @@ int init_server_socket(t_ftp **ftp)
     (*ftp)->server_addr->sin_family = AF_INET;
     (*ftp)->server_addr->sin_port = htons((*ftp)->port);
     (*ftp)->server_addr->sin_addr.s_addr = INADDR_ANY;
-    setsockopt((*ftp)->server_socket, SOL_SOCKET,
-        SO_REUSEADDR | SO_REUSEPORT | SO_KEEPALIVE, &(int){1}, sizeof(int));
-    if (set_non_blocking(&(*ftp)->server_socket) == -1)
-        return -1;
     if (bind_socket(&(*ftp)) == -1) {
         return -1;
     }

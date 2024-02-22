@@ -38,7 +38,7 @@ void cb_free(t_circular_buffer **cb)
 
 void cb_push(t_circular_buffer **cb, const char *str)
 {
-    while (*str) {
+    while (*str != '\0') {
         (*cb)->buffer[(*cb)->write_head] = *str;
         (*cb)->write_head = ((*cb)->write_head + 1) % (*cb)->size;
         if ((*cb)->write_head == (*cb)->tail) {

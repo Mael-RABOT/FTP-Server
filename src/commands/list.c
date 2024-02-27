@@ -24,9 +24,9 @@ static void send_files(t_ftp **ftp, t_client *client)
         return;
     while (entry != NULL) {
         entry = readdir(dir);
-        send_to_socket(ftp, entry->d_name, &client->data_socket);
+        send_to_socket(ftp, entry->d_name, &client->socket);
     }
-    send_to_socket(ftp, "\r\n", &client->data_socket);
+    send_to_socket(ftp, "\r\n", &client->socket);
     closedir(dir);
 }
 

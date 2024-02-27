@@ -33,6 +33,7 @@ void help(t_ftp **ftp, char **arg, int *client_socket);
 void port(t_ftp **ftp, char **arg, int *client_socket);
 void pasv(t_ftp **ftp, char **arg, int *client_socket);
 void list(t_ftp **ftp, char **arg, int *client_socket);
+void delete(t_ftp **ftp, char **arg, int *client_socket);
 
 int add_client(t_ftp **ftp, int *client_socket);
 void remove_client(t_ftp **ftp, int *client_socket);

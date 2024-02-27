@@ -23,7 +23,7 @@ command_map *get_commands(void)
         {"QUIT", quit, false},
         {"CWD", cwd, true},
         {"CDUP", cdup, true},
-        {"DELE", not_implemented, true},
+        {"DELE", delete, true},
         {"PWD", pwd, true},
         {"PASV", pasv, true},
         {"PORT", port, true},

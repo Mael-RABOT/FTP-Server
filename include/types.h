@@ -29,6 +29,7 @@
 #define C331 "331 User name okay, need password.\r\n"
 #define C332 "332 Need account for login.\r\n"
 #define C425 "425 Can't open data connection.\r\n"
+#define C425MODE "425 Use PORT or PASV first.\r\n"
 #define C451 "451 Requested action aborted. Local error in processing.\r\n"
 #define C500 "500 Syntax error, command unrecognized.\r\n"
 #define C501 "501 Syntax error in parameters or arguments.\r\n"
@@ -162,4 +163,5 @@ typedef struct {
     func_ptr function;
     bool need_login;
     t_permission permission;
+    bool need_mode;
 } command_map;

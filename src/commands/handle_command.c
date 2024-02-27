@@ -18,21 +18,21 @@ void not_implemented(t_ftp **ftp, char **arg, int *client_socket)
 command_map *get_commands(void)
 {
     static command_map commands[] = {
-        {"USER", user, false, USER},
-        {"PASS", pass, false, USER},
-        {"QUIT", quit, false, USER},
-        {"CWD", cwd, true, USER},
-        {"CDUP", cdup, true, USER},
-        {"DELE", delete, true, USER},
-        {"PWD", pwd, true, USER},
-        {"PASV", pasv, true, USER},
-        {"PORT", port, true, USER},
-        {"HELP", help, false, USER},
-        {"NOOP", noop, false, USER},
-        {"RETR", not_implemented, true, USER},
-        {"STOR", not_implemented, true, USER},
-        {"LIST", list, true, USER},
-        {NULL, NULL, false, USER}
+        {"USER", user, false, USER, false},
+        {"PASS", pass, false, USER, false},
+        {"QUIT", quit, false, USER, false},
+        {"CWD", cwd, true, USER, false},
+        {"CDUP", cdup, true, USER, false},
+        {"DELE", delete, true, USER, false},
+        {"PWD", pwd, true, USER, false},
+        {"PASV", pasv, false, USER, false}, //TODO: Change login to true
+        {"PORT", port, true, USER, false},
+        {"HELP", help, false, USER, false},
+        {"NOOP", noop, false, USER, false},
+        {"RETR", not_implemented, true, USER, true},
+        {"STOR", not_implemented, true, USER, true},
+        {"LIST", list, false, USER, true}, //TODO: Change login to true
+        {NULL, NULL, false, USER, false}
     };
 
     return commands;
@@ -62,6 +62,16 @@ static bool check_permission(
         : true;
 }
 
+static bool check_mode(
+    t_ftp **ftp, int *client_socket, t_mode user_mode, bool need_mode)
+{
+    if (!need_mode)
+        return true;
+    if (user_mode == None)
+        return 0 * send_to_socket(ftp, C425, client_socket);
+    return true;
+}
+
 static t_command_checker check_command(
     t_ftp **ftp, int *client_socket, char **args, command_map *commands)
 {
@@ -70,7 +80,8 @@ static t_command_checker check_command(
     if (strcmp(args[0], commands->command) == 0) {
         if (login_check(ftp, commands, client_socket) == false
         || check_permission(ftp, client_socket, client->user->permission,
-        commands->permission) == false) {
+        commands->permission) == false || check_mode(ftp, client_socket,
+        client->mode, commands->need_mode) == false) {
             free_array(args);
             return login_failed;
         }

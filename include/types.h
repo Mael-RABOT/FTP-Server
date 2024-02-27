@@ -33,7 +33,7 @@
 #define C530 "530 Not logged in.\r\n"
 #define C550 "550 Requested action not taken.\r\n"
 
-#define C214 "214 Help message.\n" HELP
+#define C214 "214 Help message.\r\n"
 #define HELP H1 H2 H3 H4 H5 H6 H7 H8 H9 H10 H11 H12 LABEL H13 H14 H15
 #define H1 "\tThe following commands are recognized:\n"
 #define H2A "\tUSER <SP> <username> <CRLF>   : "

@@ -23,10 +23,13 @@
 #define C230 "230 User logged in, proceed.\r\n"
 #define C220 "220 Service ready for new user.\r\n"
 #define C221 "221 Service closing control connection.\r\n"
+#define C226 "226 Closing data connection." C226END
+#define C226END " Requested file action successful.\r\n"
 #define C250 "250 Requested file action okay, completed.\r\n"
 #define C331 "331 User name okay, need password.\r\n"
 #define C332 "332 Need account for login.\r\n"
 #define C425 "425 Can't open data connection.\r\n"
+#define C451 "451 Requested action aborted. Local error in processing.\r\n"
 #define C500 "500 Syntax error, command unrecognized.\r\n"
 #define C501 "501 Syntax error in parameters or arguments.\r\n"
 #define C502 "502 Command not implemented.\r\n"

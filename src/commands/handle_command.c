@@ -31,7 +31,7 @@ command_map *get_commands(void)
         {"NOOP", noop, false},
         {"RETR", not_implemented, true},
         {"STOR", not_implemented, true},
-        {"LIST", not_implemented, true},
+        {"LIST", list, true},
         {NULL, NULL, false}
     };
 

@@ -1,3 +1,3 @@
-Anonymous:
-Admin:10778716768
-test:94798994
+Anonymous::0
+Admin:10778716768:1
+test:94798994:0

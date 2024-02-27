@@ -96,6 +96,11 @@ typedef enum e_command_checker {
     login_success = 1,
 } t_command_checker;
 
+typedef enum e_permission {
+    USER = 0,
+    ADMIN = 1,
+} t_permission;
+
 typedef struct s_circular_buffer {
     char *buffer;
     int read_head;
@@ -113,6 +118,7 @@ typedef struct s_node {
 typedef struct s_user {
     char *username;
     char *password;
+    t_permission permission;
     bool is_logged;
     t_node *dir;
     char *home;
@@ -121,6 +127,7 @@ typedef struct s_user {
 typedef struct s_login {
     char *user;
     char *pass;
+    t_permission permission;
 } t_login;
 
 typedef struct s_client {
@@ -154,4 +161,5 @@ typedef struct {
     char *command;
     func_ptr function;
     bool need_login;
+    t_permission permission;
 } command_map;

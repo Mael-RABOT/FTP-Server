@@ -21,6 +21,16 @@ void user(t_ftp **ftp, char **arg, int *client_socket)
     send_to_socket(ftp, C331, client_socket);
 }
 
+static t_permission get_permission(t_ftp **ftp, char *username)
+{
+    for (int i = 0; (*ftp)->login_array[i].user; i++) {
+        if (strcmp((*ftp)->login_array[i].user, username) == 0) {
+            return (*ftp)->login_array[i].permission;
+        }
+    }
+    return USER;
+}
+
 void pass(t_ftp **ftp, char **arg, int *client_socket)
 {
     t_client *client = get_client(ftp, client_socket);
@@ -35,5 +45,6 @@ void pass(t_ftp **ftp, char **arg, int *client_socket)
         return;
     }
     client->user->is_logged = true;
+    client->user->permission = get_permission(ftp, client->user->username);
     send_to_socket(ftp, C230, client_socket);
 }

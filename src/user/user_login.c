@@ -35,11 +35,13 @@ static void parse_line(char *line, t_login *login_array, int i)
 {
     char user[MAX_LINE_LENGTH] = "";
     char pass[MAX_LINE_LENGTH] = "";
-    int ret = sscanf(line, "%[^:]:%s", user, pass);
+    char level[MAX_LINE_LENGTH] = "";
+    int ret = sscanf(line, "%[^:]:%[^:]:%s", user, pass, level);
 
     if (ret >= 1) {
         login_array[i].user = strdup(user);
-        if (ret == 2) {
+        login_array[i].permission = atoi(level);
+        if (ret >= 2) {
             login_array[i].pass = strdup(pass);
         } else {
             login_array[i].pass = strdup("");
@@ -47,6 +49,7 @@ static void parse_line(char *line, t_login *login_array, int i)
     } else {
         login_array[i].user = strdup("");
         login_array[i].pass = strdup("");
+        login_array[i].permission = 0;
     }
 }
 

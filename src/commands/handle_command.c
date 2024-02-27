@@ -18,21 +18,21 @@ void not_implemented(t_ftp **ftp, char **arg, int *client_socket)
 command_map *get_commands(void)
 {
     static command_map commands[] = {
-        {"USER", user, false},
-        {"PASS", pass, false},
-        {"QUIT", quit, false},
-        {"CWD", cwd, true},
-        {"CDUP", cdup, true},
-        {"DELE", delete, true},
-        {"PWD", pwd, true},
-        {"PASV", pasv, true},
-        {"PORT", port, true},
-        {"HELP", help, false},
-        {"NOOP", noop, false},
-        {"RETR", not_implemented, true},
-        {"STOR", not_implemented, true},
-        {"LIST", list, true},
-        {NULL, NULL, false}
+        {"USER", user, false, USER},
+        {"PASS", pass, false, USER},
+        {"QUIT", quit, false, USER},
+        {"CWD", cwd, true, USER},
+        {"CDUP", cdup, true, USER},
+        {"DELE", delete, true, USER},
+        {"PWD", pwd, true, USER},
+        {"PASV", pasv, true, USER},
+        {"PORT", port, true, USER},
+        {"HELP", help, false, USER},
+        {"NOOP", noop, false, USER},
+        {"RETR", not_implemented, true, USER},
+        {"STOR", not_implemented, true, USER},
+        {"LIST", list, true, USER},
+        {NULL, NULL, false, USER}
     };
 
     return commands;
@@ -53,11 +53,24 @@ static bool login_check(t_ftp **ftp, command_map *command, int *client_socket)
     return true;
 }
 
+static bool check_permission(
+    t_ftp **ftp, int *client_socket,
+    t_permission user_perm, t_permission command_perm)
+{
+    return (user_perm < command_perm)
+        ? 0 * send_to_socket(ftp, "550 Permission denied.\r\n", client_socket)
+        : true;
+}
+
 static t_command_checker check_command(
     t_ftp **ftp, int *client_socket, char **args, command_map *commands)
 {
+    t_client *client = get_client(ftp, client_socket);
+
     if (strcmp(args[0], commands->command) == 0) {
-        if (login_check(ftp, commands, client_socket) == false) {
+        if (login_check(ftp, commands, client_socket) == false
+        || check_permission(ftp, client_socket, client->user->permission,
+        commands->permission) == false) {
             free_array(args);
             return login_failed;
         }

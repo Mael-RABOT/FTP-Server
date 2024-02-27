@@ -18,29 +18,78 @@ void not_implemented(t_ftp **ftp, char **arg, int *client_socket)
 command_map *get_commands(void)
 {
     static command_map commands[] = {
-        {"USER", user},
-        {"PASS", pass},
-        {"QUIT", quit},
-        {"CWD", cwd},
-        {"CDUP", cdup},
-        {"DELE", not_implemented},
-        {"PWD", pwd},
-        {"PASV", not_implemented},
-        {"PORT", not_implemented},
-        {"HELP", help},
-        {"NOOP", noop},
-        {"RETR", not_implemented},
-        {"STOR", not_implemented},
-        {"LIST", not_implemented},
-        {NULL, NULL}
+        {"USER", user, false},
+        {"PASS", pass, false},
+        {"QUIT", quit, false},
+        {"CWD", cwd, true},
+        {"CDUP", cdup, true},
+        {"DELE", not_implemented, true},
+        {"PWD", pwd, true},
+        {"PASV", pasv, true},
+        {"PORT", port, true},
+        {"HELP", help, false},
+        {"NOOP", noop, false},
+        {"RETR", not_implemented, true},
+        {"STOR", not_implemented, true},
+        {"LIST", not_implemented, true},
+        {NULL, NULL, false}
     };
 
     return commands;
 }
 
-void handle_command(t_ftp **ftp, char *command, int *client_socket)
+static bool login_check(t_ftp **ftp, command_map *command, int *client_socket)
+{
+    if ((*ftp)->clients == NULL)
+        return false;
+    for (int i = 0; i < (*ftp)->nb_clients; i++) {
+        if ((*ftp)->clients[i]->socket == *client_socket) {
+            return ((*ftp)->clients[i]->user->is_logged ==
+                false && command->need_login == true)
+                ? 0 * send_to_socket(ftp, C530, client_socket) : true;
+        }
+        return false;
+    }
+    return true;
+}
+
+static t_command_checker check_command(
+    t_ftp **ftp, int *client_socket, char **args, command_map *commands)
+{
+    if (strcmp(args[0], commands->command) == 0) {
+        if (login_check(ftp, commands, client_socket) == false) {
+            free_array(args);
+            return login_failed;
+        }
+        commands->function(ftp, args, client_socket);
+        free_array(args);
+        return login_success;
+    }
+    return command_not_found;
+}
+
+static void execute_command(
+    t_ftp **ftp, int *client_socket, command_map *commands, char **args)
 {
     int i = 0;
+
+    while (commands[i].command != NULL) {
+        switch (check_command(ftp, client_socket, args, &commands[i])) {
+            case command_not_found:
+                break;
+            case login_failed:
+                return;
+            case login_success:
+                return;
+        }
+        i++;
+    }
+    send_to_socket(ftp, C500, client_socket);
+    free_array(args);
+}
+
+void handle_command(t_ftp **ftp, char *command, int *client_socket)
+{
     char **args;
     command_map *commands;
 
@@ -50,14 +99,5 @@ void handle_command(t_ftp **ftp, char *command, int *client_socket)
     if (args == NULL)
         return;
     commands = get_commands();
-    while (commands[i].command != NULL) {
-        if (strcmp(args[0], commands[i].command) == 0) {
-            commands[i].function(ftp, args, client_socket);
-            free_array(args);
-            return;
-        }
-        i++;
-    }
-    send_to_socket(ftp, C500, client_socket);
-    free_array(args);
+    execute_command(ftp, client_socket, commands, args);
 }

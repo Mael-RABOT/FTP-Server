@@ -87,6 +87,12 @@ typedef enum e_mode {
     Passive = 1
 } t_mode;
 
+typedef enum e_command_checker {
+    command_not_found = -1,
+    login_failed = 0,
+    login_success = 1,
+} t_command_checker;
+
 typedef struct s_circular_buffer {
     char *buffer;
     int read_head;
@@ -118,6 +124,7 @@ typedef struct s_client {
     t_mode mode;
     int socket;
     int active_socket;
+    int data_socket;
     struct sockaddr_in act_addr;
     t_user *user;
     t_circular_buffer *cb_write;
@@ -143,4 +150,5 @@ typedef void (*func_ptr)(t_ftp **ftp, char **, int *client_socket);
 typedef struct {
     char *command;
     func_ptr function;
+    bool need_login;
 } command_map;

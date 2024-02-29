@@ -19,6 +19,7 @@
 #define TIMEOUT_SEC 1
 #define TIMEOUT_USEC 0
 
+#define C150 "150 File status okay, about to open data connection.\r\n"
 #define C200 "200 Command okay.\r\n"
 #define C230 "230 User logged in, proceed.\r\n"
 #define C220 "220 Service ready for new user.\r\n"

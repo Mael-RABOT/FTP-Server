@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <dirent.h>
 #include <string.h>
+#include <stdio.h>
 
 #include "../../include/protoype.h"
 
@@ -22,11 +23,12 @@ static void send_files(t_ftp **ftp, t_client *client)
     dir = opendir(pwd);
     if (dir == NULL)
         return;
+    entry = readdir(dir);
     while (entry != NULL) {
         entry = readdir(dir);
-        send_to_socket(ftp, entry->d_name, &client->socket);
+        send_to_socket(ftp, entry->d_name, &client->data_socket);
     }
-    send_to_socket(ftp, "\r\n", &client->socket);
+    send_to_socket(ftp, "\r\n", &client->data_socket);
     closedir(dir);
 }
 
@@ -36,20 +38,17 @@ void list(t_ftp **ftp, char **arg, int *client_socket)
     int pid;
 
     (void)arg;
-    if (client == NULL || client->mode != Passive) {
-        send_to_socket(ftp, "425 Use PORT or PASV first.\r\n", client_socket);
-        return;
-    }
     pid = fork();
-    if (pid == -1) {
+    if (pid == -1)
         return (void)send_to_socket(ftp, C451, client_socket);
-    } else if (pid == 0) {
+    if (pid == 0) {
         send_files(ftp, client);
+        send_to_socket(ftp, C226, client_socket);
+        close(client->data_socket);
         exit(EXIT_SUCCESS);
     } else {
-        waitpid(pid, NULL, 0);
+        send_to_socket(ftp, C150, client_socket);
         close(client->data_socket);
         client->mode = None;
-        send_to_socket(ftp, C226, client_socket);
     }
 }

@@ -56,6 +56,16 @@ static void check_connection(t_ftp **ftp)
     }
 }
 
+static void check_stdin(t_ftp **ftp)
+{
+    char buffer[2];
+
+    if (FD_ISSET(STDIN_FILENO, &(*ftp)->read_fds)) {
+        if (read(STDIN_FILENO, buffer, 1) == 0)
+            big_free(ftp, 0);
+    }
+}
+
 static void iteration(t_ftp **ftp)
 {
     struct timeval timeout = {TIMEOUT_SEC, TIMEOUT_USEC};
@@ -63,13 +73,17 @@ static void iteration(t_ftp **ftp)
 
     FD_ZERO(&(*ftp)->read_fds);
     FD_SET((*ftp)->server_socket, &(*ftp)->read_fds);
+    FD_SET(STDIN_FILENO, &(*ftp)->read_fds);
     for (int i = 0; i < (*ftp)->nb_clients; i++) {
         if ((*ftp)->clients[i]->socket > 0)
             FD_SET((*ftp)->clients[i]->socket, &(*ftp)->read_fds);
         if ((*ftp)->clients[i]->socket > max_sd)
             max_sd = (*ftp)->clients[i]->socket;
     }
+    if (STDIN_FILENO > max_sd)
+        max_sd = STDIN_FILENO;
     select(max_sd + 1, &(*ftp)->read_fds, NULL, NULL, &timeout);
+    check_stdin(ftp);
     handle_new_connection(ftp);
     check_connection(ftp);
 }

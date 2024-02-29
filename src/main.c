@@ -10,7 +10,7 @@
 
 #include "../include/protoype.h"
 
-void big_free(t_ftp **ftp)
+void big_free(t_ftp **ftp, int exit_value)
 {
     free((*ftp)->server_addr);
     free((*ftp)->server_home);
@@ -28,6 +28,7 @@ void big_free(t_ftp **ftp)
     clear_clients(ftp);
     free((*ftp)->clients);
     free((*ftp));
+    exit(exit_value);
 }
 
 int main(int ac, char **av)
@@ -44,6 +45,5 @@ int main(int ac, char **av)
     ret = init_ftp(av, &ftp);
     if (ret == 0)
         main_loop(&ftp);
-    big_free(&ftp);
-    return (ret == 0 ? 84 : 0);
+    big_free(&ftp, (ret == 0 ? 0 : 84));
 }

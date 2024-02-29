@@ -15,6 +15,8 @@
 
 static int bind_socket(t_ftp **ftp)
 {
+    setsockopt((*ftp)->server_socket, SOL_SOCKET, SO_REUSEADDR, &(int){1},
+        sizeof(int));
     if (bind((*ftp)->server_socket, (struct sockaddr *)(*ftp)->server_addr,
         sizeof((*(*ftp)->server_addr))) < 0) {
         perror("bind");

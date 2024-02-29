@@ -132,15 +132,25 @@ typedef struct s_login {
     t_permission permission;
 } t_login;
 
+typedef struct s_port {
+    int ip[4];
+    int port[4];
+} t_port;
+
+typedef struct s_pasv {
+    int port;
+} t_pasv;
+
 typedef struct s_client {
     t_mode mode;
     int socket;
-    int active_socket;
     int data_socket;
     struct sockaddr_in act_addr;
     t_user *user;
     t_circular_buffer *cb_write;
     t_circular_buffer *cb_read;
+    t_port *port;
+    t_pasv pasv;
 } t_client;
 
 typedef struct s_ftp {

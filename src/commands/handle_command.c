@@ -22,7 +22,7 @@ static void admin_only(t_ftp **ftp, char **arg, int *client_socket)
         "200 Only admin can use this command.\r\n", client_socket);
 }
 
-command_map *get_commands(void)
+static command_map *get_commands(void)
 {
     static command_map commands[] = {
         {"USER", user, false, USER, false},

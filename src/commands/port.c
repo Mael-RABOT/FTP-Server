@@ -5,61 +5,65 @@
 ** mode.c
 */
 
-#include <unistd.h>
 #include <string.h>
 #include <stdlib.h>
-#include <stdio.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
 
 #include "../../include/protoype.h"
 
-void connect_to_client(
-    t_ftp **ftp, char *ip_parts[], int port_parts[], int *client_socket)
+static int parser_port(char *token, int *port)
 {
-    struct sockaddr_in client_addr;
-    t_client *client = NULL;
+    int part;
 
-    for (int i = 0; i < (*ftp)->nb_clients; i++)
-        if ((*ftp)->clients[i]->socket == *client_socket)
-            client = (*ftp)->clients[i];
-    if (client == NULL)
-        return (void)send_to_socket(ftp, "Invalid client", client_socket);
-    client->active_socket = socket(AF_INET, SOCK_STREAM, 0);
-    if (client->active_socket == -1)
-        return (void)send_to_socket(ftp, "Invalid socket", client_socket);
-    client_addr.sin_family = AF_INET;
-    client_addr.sin_port = htons(port_parts[0] * 256 + port_parts[1]);
-    client_addr.sin_addr.s_addr = inet_addr(ip_parts[0]);
-    if (connect(client->active_socket,
-            (struct sockaddr *)&client_addr, sizeof(client_addr)) == -1) {
-        close(client->active_socket);
-        return (void)send_to_socket(ftp, C425, client_socket);
+    for (int i = 0; i < 2; i++) {
+        token = strtok(NULL, ",");
+        if (token == NULL)
+            return 1;
+        part = atoi(token);
+        if (part < 0 || part > 255)
+            return 1;
+        *port = (i == 0) ? part * 256 : *port + part;
     }
-    send_to_socket(ftp, C200, client_socket);
+    return 0;
+}
+
+static int parse_input(char *arg, int *ip, int *port)
+{
+    char *token;
+
+    for (int i = 0; i < 4; i++) {
+        token = strtok((i == 0) ? arg : NULL, ",");
+        if (token == NULL)
+            return 1;
+        ip[i] = atoi(token);
+        if (ip[i] < 0 || ip[i] > 255)
+            return 1;
+    }
+    parser_port(token, port);
+    return 0;
+}
+
+static int validate_input(int *ip, int port)
+{
+    for (int i = 0; i < 4; i++) {
+        if (ip[i] < 0 || ip[i] > 255) {
+            return 1;
+        }
+    }
+    if (port < 0 || port > 65535) {
+        return 1;
+    }
+    return 0;
 }
 
 void port(t_ftp **ftp, char **arg, int *client_socket)
 {
-    char *ip_and_port = arg[1];
-    char *token;
-    char *ip_parts[4];
-    int port_parts[2];
+    t_client *client = get_client(ftp, client_socket);
 
-    if (array_len(arg) <= 1)
-        return (void)send_to_socket(ftp, C501, client_socket);
-    for (int i = 0; i < 4; i++) {
-        token = strsep(&ip_and_port, ".");
-        if (!token)
-            return (void)send_to_socket(ftp, C501, client_socket);
-        ip_parts[i] = token;
-    }
-    for (int i = 0; i < 2; i++) {
-        token = strsep(&ip_and_port, ",");
-        if (!token)
-            return (void)send_to_socket(ftp, C501, client_socket);
-        port_parts[i] = atoi(token);
-    }
-    connect_to_client(ftp, ip_parts, port_parts, client_socket);
+    client->port = malloc(sizeof(t_port));
+    if (parse_input(arg[1], client->port->ip, client->port->port) != 0)
+        return (void)send_to_socket(ftp, C451, client_socket);
+    if (validate_input(client->port->ip, *client->port->port) != 0)
+        return (void)send_to_socket(ftp, C451, client_socket);
+    client->mode = Active;
+    send_to_socket(ftp, C200, client_socket);
 }

@@ -12,6 +12,7 @@
 int init_ftp(char **av, t_ftp **ftp);
 
 void main_loop(t_ftp **ftp);
+void big_free(t_ftp **ftp, int exit_value);
 
 int init_server_socket(t_ftp **ftp);
 
@@ -19,6 +20,7 @@ void display_help(void);
 
 int send_to_socket(t_ftp **ftp, const char *data, int *client_socket);
 int read_from_socket(t_ftp **ftp, int *client_socket);
+int launch_data_connections(t_ftp **ftp, t_client *client);
 
 void handle_command(t_ftp **ftp, char *command, int *client_socket);
 

@@ -36,7 +36,7 @@ static command_map *get_commands(void)
         {"PORT", port, true, USER, false},
         {"HELP", help, false, USER, false},
         {"NOOP", noop, false, USER, false},
-        {"RETR", not_implemented, true, USER, true},
+        {"RETR", retr, true, USER, true},
         {"STOR", not_implemented, true, USER, true},
         {"LIST", list, true, USER, true},
         {"ADMIN", admin_only, false, ADMIN, false},

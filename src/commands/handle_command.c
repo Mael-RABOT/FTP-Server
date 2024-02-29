@@ -9,10 +9,17 @@
 
 #include "../../include/protoype.h"
 
-void not_implemented(t_ftp **ftp, char **arg, int *client_socket)
+static void not_implemented(t_ftp **ftp, char **arg, int *client_socket)
 {
     (void)arg;
     send_to_socket(ftp, C502, client_socket);
+}
+
+static void admin_only(t_ftp **ftp, char **arg, int *client_socket)
+{
+    (void)arg;
+    send_to_socket(ftp,
+        "200 Only admin can use this command.\r\n", client_socket);
 }
 
 command_map *get_commands(void)
@@ -25,13 +32,14 @@ command_map *get_commands(void)
         {"CDUP", cdup, true, USER, false},
         {"DELE", delete, true, USER, false},
         {"PWD", pwd, true, USER, false},
-        {"PASV", pasv, false, USER, false}, //TODO: Change login to true
+        {"PASV", pasv, true, USER, false},
         {"PORT", port, true, USER, false},
         {"HELP", help, false, USER, false},
         {"NOOP", noop, false, USER, false},
         {"RETR", not_implemented, true, USER, true},
         {"STOR", not_implemented, true, USER, true},
-        {"LIST", list, false, USER, true}, //TODO: Change login to true
+        {"LIST", list, true, USER, true},
+        {"ADMIN", admin_only, false, ADMIN, false},
         {NULL, NULL, false, USER, false}
     };
 

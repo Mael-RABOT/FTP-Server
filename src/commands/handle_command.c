@@ -9,12 +9,6 @@
 
 #include "../../include/protoype.h"
 
-static void not_implemented(t_ftp **ftp, char **arg, int *client_socket)
-{
-    (void)arg;
-    send_to_socket(ftp, C502, client_socket);
-}
-
 static void admin_only(t_ftp **ftp, char **arg, int *client_socket)
 {
     (void)arg;
@@ -37,7 +31,7 @@ static command_map *get_commands(void)
         {"HELP", help, false, USER, false},
         {"NOOP", noop, false, USER, false},
         {"RETR", retr, true, USER, true},
-        {"STOR", not_implemented, true, USER, true},
+        {"STOR", stor, true, USER, true},
         {"LIST", list, true, USER, true},
         {"ADMIN", admin_only, false, ADMIN, false},
         {NULL, NULL, false, USER, false}

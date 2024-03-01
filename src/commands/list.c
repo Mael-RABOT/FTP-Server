@@ -98,12 +98,12 @@ void list(t_ftp **ftp, char **arg, int *client_socket)
     int pid;
 
     (void)arg;
-    if (launch_data_connections(ftp, client) == 1)
-        return;
     pid = fork();
     if (pid == -1)
         return (void)send_to_socket(ftp, C451, client_socket);
     if (pid == 0) {
+        if (launch_data_connections(ftp, client) == 1)
+            return;
         send_files(ftp, client);
         send_to_socket(ftp, C226, client_socket);
         close(client->data_socket);

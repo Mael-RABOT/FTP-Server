@@ -76,7 +76,7 @@ static bool check_mode(
     if (!need_mode)
         return true;
     if (user_mode == None)
-        return 0 * send_to_socket(ftp, C425, client_socket);
+        return 0 * send_to_socket(ftp, C425MODE, client_socket);
     return true;
 }
 

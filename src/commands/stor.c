@@ -12,20 +12,21 @@
 
 #include "../../include/protoype.h"
 
-static void get_file(t_client *client, char **args)
+static void get_file(t_client *client, char *filename)
 {
     FILE *file;
     char buffer[1024];
     int bytes_read;
 
-    file = fopen(args[1], "w");
+    file = fopen(filename, "w");
     if (file == NULL)
         return;
-    bytes_read = read(client->data_socket, buffer, 1024);
-    while (bytes_read > 0) {
-        fwrite(buffer, 1, bytes_read, file);
-        bytes_read = read(client->data_socket, buffer, 1024);
-    }
+    do {
+        bytes_read = read(client->data_socket, buffer, sizeof(buffer));
+        if (bytes_read > 0) {
+            fwrite(buffer, 1, bytes_read, file);
+        }
+    } while (bytes_read > 0);
     fclose(file);
 }
 
@@ -51,7 +52,7 @@ void stor(t_ftp **ftp, char **arg, int *client_socket)
     if (pid == 0) {
         if (launch_data_connections(ftp, client) == 1)
             return;
-        get_file(client, arg);
+        get_file(client, arg[1]);
         send_to_socket(ftp, C226, client_socket);
         close(client->data_socket);
         exit(EXIT_SUCCESS);

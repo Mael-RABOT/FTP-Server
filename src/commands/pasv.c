@@ -58,6 +58,10 @@ static void send_reply_to_client(
 {
     char reply[256];
 
+    for (int i = 0; ip[i] != '\0'; i++) {
+        if (ip[i] == '.')
+            ip[i] = ',';
+    }
     sprintf(reply, "227 Entering Passive Mode (%s,%d,%d).\r\n",
         ip, port / 256, port % 256);
     send_to_socket(ftp, reply, client_socket);

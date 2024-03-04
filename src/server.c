@@ -61,7 +61,8 @@ static void check_stdin(t_ftp **ftp)
     char buffer[2];
 
     if (FD_ISSET(STDIN_FILENO, &(*ftp)->read_fds)) {
-        if (read(STDIN_FILENO, buffer, 1) == 0)
+        read(STDIN_FILENO, buffer, 1);
+        if (buffer[0] == 'q')
             big_free(ftp, 0);
     }
 }

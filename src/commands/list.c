@@ -86,6 +86,8 @@ static void send_files(t_ftp **ftp, t_client *client)
         free(dir_entries);
         return;
     }
+    send_to_socket(ftp, dir_entries, &client->data_socket);
+    free(dir_entries);
 }
 
 void list(t_ftp **ftp, char **arg, int *client_socket)
@@ -103,7 +105,8 @@ void list(t_ftp **ftp, char **arg, int *client_socket)
         send_files(ftp, client);
         send_to_socket(ftp, C226, client_socket);
         close(client->data_socket);
-        exit(EXIT_SUCCESS);
+        free_array(arg);
+        big_free(ftp, EXIT_SUCCESS);
     } else {
         send_to_socket(ftp, C150, client_socket);
         close(client->data_socket);

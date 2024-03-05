@@ -106,7 +106,7 @@ void cwd(t_ftp **ftp, char **arg, int *client_socket)
     t_client *client = get_client(ftp, client_socket);
 
     if (arg == NULL || arg[1] == NULL) {
-        send_to_socket(ftp, C501, client_socket);
+        send_to_socket(ftp, C550, client_socket);
         return;
     }
     if (special_case(ftp, arg, client))

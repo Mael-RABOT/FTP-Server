@@ -64,7 +64,7 @@ void retr(t_ftp **ftp, char **arg, int *client_socket)
     int pid;
 
     if (check_args(arg, ftp, client_socket))
-        return (void) send_to_socket(ftp, C451, client_socket);
+        return (void) send_to_socket(ftp, C550, client_socket);
     pid = fork();
     if (pid == -1)
         return (void)send_to_socket(ftp, C451, client_socket);

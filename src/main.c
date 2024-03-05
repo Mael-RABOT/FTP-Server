@@ -7,6 +7,7 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <dirent.h>
 
 #include "../include/protoype.h"
 
@@ -31,6 +32,13 @@ void big_free(t_ftp **ftp, int exit_value)
     exit(exit_value);
 }
 
+bool check_path(char *path)
+{
+    DIR *dir = opendir(path);
+
+    return (dir) ? true + 0 * closedir(dir) : false;
+}
+
 int main(int ac, char **av)
 {
     t_ftp *ftp;
@@ -41,6 +49,8 @@ int main(int ac, char **av)
         return 0;
     }
     if (ac != 3)
+        return 84;
+    if (!check_path(av[2]))
         return 84;
     ret = init_ftp(av, &ftp);
     if (ret == 0)

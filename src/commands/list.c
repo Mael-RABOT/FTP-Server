@@ -73,23 +73,19 @@ static char *get_directory_entries(t_ftp **ftp, t_client *client)
     if (dir == NULL)
         return NULL;
     str = read_directory_entries(dir, str);
+    free(pwd);
     return str;
-}
-
-static void send_directory_entries(
-    t_ftp **ftp, t_client *client, char *dir_entries)
-{
-    if (dir_entries != NULL) {
-        send_to_socket(ftp, dir_entries, &client->data_socket);
-        free(dir_entries);
-    }
 }
 
 static void send_files(t_ftp **ftp, t_client *client)
 {
     char *dir_entries = get_directory_entries(ftp, client);
 
-    send_directory_entries(ftp, client, dir_entries);
+    if (dir_entries == NULL) {
+        send_to_socket(ftp, C451, &client->socket);
+        free(dir_entries);
+        return;
+    }
 }
 
 void list(t_ftp **ftp, char **arg, int *client_socket)

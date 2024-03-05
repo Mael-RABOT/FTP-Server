@@ -31,6 +31,7 @@ static void send_file(t_ftp **ftp, t_client *client, char *filename)
     }
     fclose(file);
     free(path);
+    send_to_socket(ftp, C226, &client->socket);
 }
 
 static int check_file(char *filename, t_ftp **ftp, int *client_socket)
@@ -72,9 +73,9 @@ void retr(t_ftp **ftp, char **arg, int *client_socket)
         if (launch_data_connections(ftp, client) == 1)
             return;
         send_file(ftp, client, arg[1]);
-        send_to_socket(ftp, C226, client_socket);
         close(client->data_socket);
-        exit(EXIT_SUCCESS);
+        free_array(arg);
+        big_free(ftp, EXIT_SUCCESS);
     } else {
         send_to_socket(ftp, C150, client_socket);
         close(client->data_socket);

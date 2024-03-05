@@ -31,6 +31,7 @@ static void get_file(t_ftp **ftp, t_client *client, char *filename)
         }
     } while (bytes_read > 0);
     fclose(file);
+    send_to_socket(ftp, C226, &client->socket);
 }
 
 static int check_args(char **args)
@@ -47,17 +48,17 @@ void stor(t_ftp **ftp, char **arg, int *client_socket)
     int pid;
 
     if (check_args(arg))
-        return (void) send_to_socket(ftp, "451: bad args", client_socket);
+        return (void) send_to_socket(ftp, C550, client_socket);
     pid = fork();
     if (pid == -1)
-        return (void)send_to_socket(ftp, "451: fork failed", client_socket);
+        return (void)send_to_socket(ftp, C451, client_socket);
     if (pid == 0) {
         if (launch_data_connections(ftp, client) == 1)
             return;
         get_file(ftp, client, arg[1]);
-        send_to_socket(ftp, C226, client_socket);
         close(client->data_socket);
-        exit(EXIT_SUCCESS);
+        free_array(arg);
+        big_free(ftp, EXIT_SUCCESS);
     } else {
         send_to_socket(ftp, C150, client_socket);
         close(client->data_socket);

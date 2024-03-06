@@ -1,5 +1,6 @@
 /.idea
 *.out
 myftp
+unit_tests
 *.o
 test_ftp.sh

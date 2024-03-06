@@ -10,7 +10,7 @@ for (( i=0; i<${#password}; i++ )); do
     encrypted_password+=$(printf '%d' $(( $(printf '%d' "'${password:$i:1}") ^ $key )))
 done
 
-while true; do
+while True; do
     read -p "Enter permission level (0 or 1): " permission
     if [[ "$permission" == "0" ]] || [[ "$permission" == "1" ]]; then
         break

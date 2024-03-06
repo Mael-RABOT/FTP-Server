@@ -84,7 +84,7 @@ t_login *parse_file(const char *filename)
     return login_array;
 }
 
-bool check_user(t_ftp **ftp, t_client *client)
+t_bool check_user(t_ftp **ftp, t_client *client)
 {
     int i = 0;
     char *encrypted_pass = xor_cipher(client->user->password);
@@ -92,13 +92,13 @@ bool check_user(t_ftp **ftp, t_client *client)
     while ((*ftp)->login_array[i].user != NULL) {
         if (strcmp((*ftp)->login_array[i].user, client->user->username) == 0
             && strcmp((*ftp)->login_array[i].pass, "") == 0)
-            return true;
+            return True;
         if (strcmp((*ftp)->login_array[i].pass, encrypted_pass) == 0) {
             free(encrypted_pass);
-            return true;
+            return True;
         }
         i++;
     }
     free(encrypted_pass);
-    return false;
+    return False;
 }

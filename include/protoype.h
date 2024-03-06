@@ -47,7 +47,7 @@ t_client *get_client(t_ftp **ftp, int *client_socket);
 char *get_pwd(t_ftp **ftp, int *client_socket);
 
 t_login *parse_file(const char *filename);
-bool check_user(t_ftp **ftp, t_client *client);
+t_bool check_user(t_ftp **ftp, t_client *client);
 char *xor_cipher(char *input);
 
 t_circular_buffer *cb_init(int size);

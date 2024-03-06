@@ -82,9 +82,9 @@
 #define H15 H15A H15B
 
 typedef enum e_bool {
-    false = 0,
-    true = 1
-} bool;
+    False = 0,
+    True = 1
+} t_bool;
 
 typedef enum e_mode {
     None = -1,
@@ -121,7 +121,7 @@ typedef struct s_user {
     char *username;
     char *password;
     t_permission permission;
-    bool is_logged;
+    t_bool is_logged;
     t_node *dir;
     char *home;
 } t_user;
@@ -163,7 +163,7 @@ typedef struct s_ftp {
     struct sockaddr_in *server_addr;
     t_circular_buffer *cb_write;
     t_circular_buffer *cb_read;
-    bool is_running;
+    t_bool is_running;
     fd_set read_fds;
 } t_ftp;
 
@@ -172,7 +172,7 @@ typedef void (*func_ptr)(t_ftp **ftp, char **, int *client_socket);
 typedef struct {
     char *command;
     func_ptr function;
-    bool need_login;
+    t_bool need_login;
     t_permission permission;
-    bool need_mode;
+    t_bool need_mode;
 } command_map;

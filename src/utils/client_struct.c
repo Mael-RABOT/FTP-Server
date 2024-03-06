@@ -25,7 +25,7 @@ static t_user *init_user(char *home)
     new_user->username = NULL;
     new_user->password = NULL;
     new_user->permission = USER;
-    new_user->is_logged = false;
+    new_user->is_logged = False;
     new_user->dir = create_node(home);
     if (new_user->dir == NULL) {
         return NULL;

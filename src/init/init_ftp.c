@@ -18,7 +18,7 @@ int init_ftp(char **av, t_ftp **ftp)
     (*ftp)->cb_write = cb_init(BUFFER_SIZE);
     (*ftp)->cb_read = cb_init(BUFFER_SIZE);
     (*ftp)->port = atoi(av[1]);
-    (*ftp)->is_running = true;
+    (*ftp)->is_running = True;
     (*ftp)->nb_clients = 0;
     (*ftp)->clients = malloc(sizeof(t_client *) * MAX_CLIENTS);
     (*ftp)->login_array = parse_file("login.txt");

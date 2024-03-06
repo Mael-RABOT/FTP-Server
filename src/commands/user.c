@@ -40,11 +40,11 @@ void pass(t_ftp **ftp, char **arg, int *client_socket)
         return;
     }
     client->user->password = strdup((array_len(arg) != 2) ? "" : arg[1]);
-    if (check_user(ftp, client) == false) {
+    if (check_user(ftp, client) == False) {
         send_to_socket(ftp, C530, client_socket);
         return;
     }
-    client->user->is_logged = true;
+    client->user->is_logged = True;
     client->user->permission = get_permission(ftp, client->user->username);
     send_to_socket(ftp, C230, client_socket);
 }

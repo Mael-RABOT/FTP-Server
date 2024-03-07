@@ -5,7 +5,7 @@
 ## Makefile
 ##
 
-SRC		 := $(shell find . -type f -name '*.c' -not -path "./test/*")
+SRC		 := $(shell find . -type f -name '*.c' -not -path "./tests/*")
 TEST_SRC := $(shell find . -type f -name '*.c' -not -name 'main.c')
 
 OBJ		=	$(SRC:.c=.o)
@@ -53,6 +53,6 @@ test: $(TEST_EXE)
 	./$(TEST_EXE) --verbose
 
 tests_run: fclean test
-	gcovr --exclude-directories test
+	gcovr --exclude-directories tests
 
 .PHONY: all clean fclean re val val_full test tests_run

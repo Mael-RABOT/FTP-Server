@@ -35,8 +35,6 @@ int read_from_socket(t_ftp **ftp, int *client_socket)
         return -1;
     }
     bytes_read = read((*client_socket), buffer, BUFFER_SIZE - 1);
-    printf("bytes_read: %ld\n", bytes_read);
-    printf("buffer: %s\n", buffer);
     if (bytes_read < 0) {
         free(buffer);
         return -1;

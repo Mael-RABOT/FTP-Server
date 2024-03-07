@@ -10,6 +10,7 @@
 #include <unistd.h>
 #include <sys/select.h>
 #include <sys/socket.h>
+#include <stdlib.h>
 
 #include "../include/protoype.h"
 
@@ -31,6 +32,18 @@ static void handle_new_connection(t_ftp **ftp)
     }
 }
 
+static void launch_command(t_ftp **ftp, char *buffer, int i)
+{
+    char *command;
+
+    cb_push(&(*ftp)->clients[i]->cb_read, buffer);
+    command = get_command(&(*ftp)->clients[i]->cb_read);
+    if (command == NULL)
+        return;
+    handle_command(ftp, command, &(*ftp)->clients[i]->socket);
+    free(command);
+}
+
 static void handle_buffer(t_ftp **ftp, int i)
 {
     int bytes_read;
@@ -44,7 +57,7 @@ static void handle_buffer(t_ftp **ftp, int i)
         }
         if (bytes_read > 0) {
             buffer[bytes_read] = '\0';
-            handle_command(ftp, buffer, &(*ftp)->clients[i]->socket);
+            launch_command(ftp, buffer, i);
         }
     }
 }

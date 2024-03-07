@@ -42,8 +42,8 @@ int add_client(t_ftp **ftp, int *client_socket)
     }
     new_client->user = init_user((*ftp)->server_home);
     new_client->socket = *client_socket;
-    new_client->cb_write = NULL;
-    new_client->cb_read = NULL;
+    new_client->cb_write = cb_init(4096);
+    new_client->cb_read = cb_init(4096);
     new_client->mode = None;
     (*ftp)->clients[(*ftp)->nb_clients] = new_client;
     (*ftp)->nb_clients++;
@@ -52,8 +52,8 @@ int add_client(t_ftp **ftp, int *client_socket)
 
 static void free_client(t_client *client)
 {
-    free(client->cb_write);
-    free(client->cb_read);
+    cb_free(&client->cb_write);
+    cb_free(&client->cb_read);
     delete_list(&client->user->dir);
     free(client->user->home);
     free(client->user->username);
